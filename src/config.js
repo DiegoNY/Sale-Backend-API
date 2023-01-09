@@ -1,0 +1,4 @@
+const Config = {
+    Cliente : '',
+    BaseDatos: '',
+}

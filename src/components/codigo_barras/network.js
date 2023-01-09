@@ -47,8 +47,8 @@ router.put('/:id', (req, res) => {
 
 
 
-router.delete('/', (req, res) => {
-    res.send('Mensaje al eliminar un codigo de barras')
+router.delete('/:id', (req, res) => {
+    controller.updateCodigoBarras()
 })
 
 module.exports = router;

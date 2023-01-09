@@ -5,42 +5,55 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
+    const filterProducto = req.query.id || null;
 
-    // controller.getCodigosBarras()
-    //     .then((productos) => {
-    //         response.successDataApiV1(req, res, productos, 200)
-    //     })
-    //     .catch(e => {
-    //         response.error(req, res, 'Error inesperado', 500, e)
-    //     })
-    res.send('Funciona get')
+    controller.get(filterProducto)
+        .then((productos) => {
+            response.successDataApiV1(req, res, productos, 200)
+        })
+        .catch(e => {
+            response.error(req, res, 'Error inesperado', 500, e)
+        })
 
 })
 
 router.post('/', (req, res) => {
 
-    // controller.addCodigoBarras(req.body)
-    //     .then((productos) => {
+    controller.add(req.body)
+        .then((productos) => {
 
-    //         response.successDataApiV1(req, res, [{ error: "", body: productos }], 201)
+            response.successDataApiV1(req, res, [{ error: "", body: productos }], 201)
 
-    //     })
-    //     .catch(e => {
-    //         response.error(req, res, 'Informacion requerida', 400, 'Error al registrar codigo de barras')
-    //     });
+        })
+        .catch(e => {
+            response.error(req, res, 'Informacion requerida', 400, e)
+        });
 
-    res.send('funciona post')
 
 })
 
 router.put('/', (req, res) => {
-    res.send('Mensaje al actualizar un codigo dee barras')
+
+    controller.update(req.query.id, req.body)
+        .then((data) => {
+            response.success(req, res, data, 200);
+        })
+        .catch(e => {
+            response.error(req, res, 'Error interno', 500, e)
+        })
+
 })
 
 
 
 router.delete('/', (req, res) => {
-    res.send('Mensaje al eliminar un codigo de barras')
+    controller.delete(req.query.id)
+        .then((data) => {
+            response.success(req, res, data, 202);
+        })
+        .catch(e => {
+            response.error(req, res, 'Error interno', 500, e);
+        })
 })
 
 module.exports = router;
