@@ -15,7 +15,6 @@ async function getProducto(filterProducto) {
     }
 
     const productos = await Model.find(filter);
-    console.log(productos);
     return productos;
 
 }

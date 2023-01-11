@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const myScheme = new Schema({
     codigo_barras: {
-        type: Number,
+        type: String,
         unique: true,
         require: true,
     },
@@ -21,7 +21,7 @@ const myScheme = new Schema({
     stock_minimo: Number,
     tipo: String,
     fecha_actualizacion: String,
-    venta_sujeta: Number,
+    venta_sujeta: String,
 
 });
 

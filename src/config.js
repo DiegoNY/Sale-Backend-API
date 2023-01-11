@@ -1,4 +1,5 @@
 const Config = {
     Cliente : '',
     BaseDatos: '',
+    
 }
