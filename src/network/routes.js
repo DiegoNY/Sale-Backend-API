@@ -7,6 +7,8 @@ const laboratorios = require('../components/laboratorio/network')
 const moneda = require('../components/moneda/network')
 const proveedor = require('../components/proveedor/network')
 const tipoDocumento = require('../components/tipo_documento/network')
+const stocks = require('../components/stock/network');
+const { socket } = require('../socket');
 
 const routes = function (server) {
     server.use('/api/v2/codigo_barras', codigo_barras)
@@ -17,6 +19,11 @@ const routes = function (server) {
     server.use('/api/v2/cliente', clientes)
     server.use('/api/v2/laboratorio', laboratorios)
     server.use('/api/v2/tipo_documento', tipoDocumento)
+    server.use('/api/v2/stocks', stocks)
+
+    socket.io.on('connection', socket => {
+        console.log('Socket conectado' + socket.id)
+    })
 }
 
 module.exports = routes;

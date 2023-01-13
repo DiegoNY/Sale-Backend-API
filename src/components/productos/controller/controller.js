@@ -1,6 +1,9 @@
 const store = require('../database/store.js');
+const { addStock } = require('../../stock/database/store.js');
 
 function addProducto(productoData) {
+
+    console.log(productoData);
 
     return new Promise((resolve, reject) => {
         if (!productoData.codigo_barras) {
@@ -26,8 +29,10 @@ function addProducto(productoData) {
             venta_sujeta: productoData.venta_sujeta,
         }
 
-        store.add(producto);
-        resolve(producto);
+
+
+        const response = store.add(producto);
+        resolve(response);
 
     })
 
@@ -61,6 +66,7 @@ function deleteProducto(id) {
         resolve(result);
     });
 }
+
 
 module.exports = {
     add: addProducto,

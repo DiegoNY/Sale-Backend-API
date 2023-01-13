@@ -1,9 +1,38 @@
-const Model = require('../model/model.js')
+const Model = require('../model/model.js');
+const socket = require('../../../socket.js').socket;
 
+/**
+ * Funcion recibe un objeto y retorna un objeto e
+ * ingresa el producto a la base de datos y lo retorna ,
+ * el codigo de barras del producto es enviado a todos 
+ * los clientes para que sean actualizados 😲
+ * 
+ * @param {*} producto un objeto con los valores del producto  
+ * @returns 
+ */
 function addProducto(producto) {
 
     const myProducto = new Model(producto);
-    myProducto.save();
+    const response = myProducto.save()
+        .then(result => {
+            console.log('Producto Guardado', result);
+            socket.io.on('connection', (socket) => {
+                socket.broadcast.emit('codigo_barra_uso', { mensaje: 'Codigo Barras en uso', codigo_barras: result.codigo_barras })
+            })
+            socket.io.emit('codigo_barra_uso', { mensaje: 'Codigo Barras en uso', codigo_barras: result.codigo_barras }); 
+            return result;
+        })
+        .catch(error => {
+            if (error.code === 11000) {
+                console.log('El codigo de barra ya existe');
+                return "El codigo de barra ya existe";
+            } else {
+                console.log('Error al guardar el producto:', error);
+            }
+        });;
+
+    return response;
+
 }
 
 async function getProducto(filterProducto) {

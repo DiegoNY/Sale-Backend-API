@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
 const myScheme = new Schema({
     codigo_barras: {
         type: String,
-        unique: true,
         require: true,
+        unique: true,
     },
     descripcion: String,
     fecha_registro: String,
