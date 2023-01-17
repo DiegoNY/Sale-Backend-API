@@ -5,17 +5,17 @@ function addCliente(clienteData) {
 
     return new Promise((resolve, reject) => {
         try {
-
-
+            //tipo de identificacion 01 o 06  uno para DNI 06 para RUC 
 
             const cliente = {
                 correo: clienteData.correo,
                 fecha_creacion: hoy,
                 descripcion: clienteData.descripcion,
                 direccion: clienteData.direccion,
-                dni: clienteData.dni,
+                dni: clienteData.dni_ruc,
                 estado: 1,
                 telefono: clienteData.telefono,
+                tipo_identificacion: clienteData.tipo_identificacion,
             }
 
             store.add(cliente);

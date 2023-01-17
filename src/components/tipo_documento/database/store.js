@@ -25,7 +25,7 @@ async function updateTipoDocumentos(id, body) {
     const foundTipoDocumentos = await Model.findOne({
         _id: id
     })
-   
+
 
     foundTipoDocumentos.descripcion_caja = body.descripcion_caja;
     foundTipoDocumentos.estado = body.estado;
@@ -33,6 +33,7 @@ async function updateTipoDocumentos(id, body) {
     foundTipoDocumentos.estado = body.estado;
     foundTipoDocumentos.nombre = body.nombre;
     foundTipoDocumentos.serie = body.serie;
+    foundTipoDocumentos.tipo = body.tipo;
     foundTipoDocumentos.fecha_actualizacion = hoy;
 
     const newTipoDocumento = await foundTipoDocumentos.save();

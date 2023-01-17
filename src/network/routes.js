@@ -9,6 +9,7 @@ const proveedor = require('../components/proveedor/network')
 const tipoDocumento = require('../components/tipo_documento/network')
 const stocks = require('../components/stock/network');
 const { socket } = require('../socket');
+const fecha = new Date()
 
 const routes = function (server) {
     server.use('/api/v2/codigo_barras', codigo_barras)
@@ -22,8 +23,20 @@ const routes = function (server) {
     server.use('/api/v2/stocks', stocks)
 
     socket.io.on('connection', socket => {
-        console.log('Socket conectado' + socket.id)
+
+        console.log('Socket conectado : ' + socket.id + fecha);
+
+
+
+        socket.on('disconnect', () => {
+            console.table('El socket : ' + socket.id + ' se desconecto' + fecha)
+            console.log('El socket : ' + socket.id + ' se desconecto' + fecha)
+        });
+
     })
+
+    socket.io.on('connection', () => console.log(' Cantidad de Clientes conectados ' + socket.io.engine.clientsCount))
+
 }
 
 module.exports = routes;

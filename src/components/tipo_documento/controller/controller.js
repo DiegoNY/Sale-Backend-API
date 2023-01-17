@@ -12,10 +12,11 @@ function addTipoDocumento(tipoDocumentoData) {
                 fecha_creacion: hoy,
                 direccion: tipoDocumentoData.direccion,
                 max_correlativos: tipoDocumentoData.max_correlativos,
-                estado: tipoDocumentoData.estado || 1 ,
+                estado: tipoDocumentoData.estado || 1,
                 ip_mask: tipoDocumentoData.ip_mask,
                 estatus: 1,
                 serie: tipoDocumentoData.serie,
+                tipo: tipoDocumentoData.tipo,
             }
 
             store.add(proveedor);

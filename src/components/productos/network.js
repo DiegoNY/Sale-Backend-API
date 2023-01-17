@@ -1,8 +1,11 @@
 const express = require('express');
+const multer = require('multer');
 const controller = require('./controller/controller.js')
 const response = require('../../network/response.js')
 const router = express.Router();
-
+const upload = multer({
+    dest: 'public/files/',
+})
 
 router.get('/', (req, res) => {
     const filterProducto = req.query.id || null;
@@ -17,9 +20,10 @@ router.get('/', (req, res) => {
 
 })
 
-router.post('/', (req, res) => {
+router.post('/', upload.single('imagen'), (req, res) => {
 
-    controller.add(req.body)
+    
+    controller.add(req.body, req.file)
         .then((productos) => {
 
             response.successDataApiV1(req, res, [{ error: "", body: productos }], 201)

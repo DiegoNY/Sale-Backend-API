@@ -19,7 +19,7 @@ function addProducto(producto) {
             socket.io.on('connection', (socket) => {
                 socket.broadcast.emit('codigo_barra_uso', { mensaje: 'Codigo Barras en uso', codigo_barras: result.codigo_barras })
             })
-            socket.io.emit('codigo_barra_uso', { mensaje: 'Codigo Barras en uso', codigo_barras: result.codigo_barras }); 
+            socket.io.emit('codigo_barra_uso', { mensaje: 'Codigo Barras en uso', codigo_barras: result.codigo_barras });
             return result;
         })
         .catch(error => {
@@ -66,6 +66,11 @@ async function updateProducto(id, body) {
     foundProducto.tipo = body.tipo;
     foundProducto.fecha_actualizacion = body.fecha_actualizacion;
     foundProducto.venta_sujeta = body.venta_sujeta;
+    foundProducto.stock_caja = body.stock_caja;
+    foundProducto.stock_tableta = body.stock_tableta;
+    foundProducto.precio_venta_caja = body.precio_venta_caja;
+    foundProducto.precio_venta_tableta = body.precio_venta_tableta;
+    foundProducto.precio_venta_unidad = body.precio_venta_unidad;
 
     const newProducto = await foundProducto.save();
     return newProducto;

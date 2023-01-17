@@ -12,6 +12,7 @@ const myScheme = new Schema({
     estatus: Number,
     ip_mask: String,
     nombre: String,
+    tipo: String,
     serie: String,
     fecha_actualizacion: String,
 });

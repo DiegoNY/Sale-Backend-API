@@ -12,7 +12,7 @@ const myScheme = new Schema({
     dni: Number,
     estado: Number,
     telefono: Number,
-
+    tipo_identificacion: String,
 });
 
 const Model = mongoose.model('clientes', myScheme);

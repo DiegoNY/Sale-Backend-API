@@ -1,14 +1,33 @@
 const store = require('../database/store.js');
 const { addStock } = require('../../stock/database/store.js');
+const hoy = new Date();
+let fecha = hoy.toLocaleDateString("es-ES", {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+})
 
-function addProducto(productoData) {
+let hora = hoy.toLocaleTimeString("es-ES", {
+    hour12: false
+})
 
-    console.log(productoData);
+let fecha_registro = `${fecha} - ${hora}`
+
+function addProducto(productoData, file) {
+
 
     return new Promise((resolve, reject) => {
         if (!productoData.codigo_barras) {
             console.error('[messageController] No contiene codigo barras ')
             return reject('El codigo barras es requerido')
+        }
+
+        console.log(file)
+        console.log("Si tiene file")
+        let fileUrl = '';
+        if (file) {
+            //cambiar url por la carpeta en la que se sirven los estaticos 
+            fileUrl = 'http://192.168.1.43:8080/apiv2/public/files/' + file.filename;
         }
 
         const producto = {
@@ -18,18 +37,21 @@ function addProducto(productoData) {
             descuento: productoData.descuento,
             estado: productoData.estado,
             estatus: 1,
-            foto_producto: productoData.foto_producto,
+            foto_producto: fileUrl,
             id_laboratorio: productoData.id_laboratorio,
             precio_compra: productoData.precio_compra,
             precio_venta: productoData.precio_venta,
+            precio_venta_caja: productoData.precio_venta_caja,
+            precio_venta_tableta: productoData.precio_venta_tableta,
+            precio_venta_unidad: productoData.precio_venta_unidad,
             stock: productoData.stock,
             stock_minimo: productoData.stock_minimo,
             tipo: productoData.tipo,
-            fecha_actualizacion: productoData.fecha_actualizacion,
+            fecha_registro: fecha_registro,
             venta_sujeta: productoData.venta_sujeta,
+            stock_caja: productoData.stock_caja,
+            stock_tableta: productoData.stock_tableta
         }
-
-
 
         const response = store.add(producto);
         resolve(response);

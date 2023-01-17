@@ -65,6 +65,7 @@
     "mongoose-unique-validator": "^3.1.0",
     "morgan": "^1.10.0",
     "ms": "^2.0.0",
+    "multer": "^1.4.5-lts.1",
     "negotiator": "^0.6.3",
     "node-gyp-build": "^4.6.0",
     "nodemon": "^2.0.20",
