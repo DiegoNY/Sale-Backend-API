@@ -1,5 +1,4 @@
 const store = require('../database/store.js');
-const { addStock } = require('../../stock/database/store.js');
 const hoy = new Date();
 let fecha = hoy.toLocaleDateString("es-ES", {
     day: '2-digit',
@@ -34,16 +33,17 @@ function addProducto(productoData, file) {
             codigo_barras: productoData.codigo_barras,
             descripcion: productoData.descripcion,
             fecha_registro: productoData.fecha_registro,
-            descuento: productoData.descuento,
+            descuento: productoData.descuento || 0,
             estado: productoData.estado,
             estatus: 1,
             foto_producto: fileUrl,
             id_laboratorio: productoData.id_laboratorio,
             precio_compra: productoData.precio_compra,
+            precio_compra_caja : productoData.precio_compra_caja,
+            precio_compra_tableta : productoData.precio_compra_tableta,
             precio_venta: productoData.precio_venta,
             precio_venta_caja: productoData.precio_venta_caja,
             precio_venta_tableta: productoData.precio_venta_tableta,
-            precio_venta_unidad: productoData.precio_venta_unidad,
             stock: productoData.stock,
             stock_minimo: productoData.stock_minimo,
             tipo: productoData.tipo,

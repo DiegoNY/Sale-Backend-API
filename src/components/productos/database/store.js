@@ -1,6 +1,8 @@
 const Model = require('../model/model.js');
 const socket = require('../../../socket.js').socket;
 
+let hoy = new Date();
+
 /**
  * Funcion recibe un objeto y retorna un objeto e
  * ingresa el producto a la base de datos y lo retorna ,
@@ -50,27 +52,30 @@ async function getProducto(filterProducto) {
 
 async function updateProducto(id, body) {
     console.log(body);
+    console.log(id);
     const foundProducto = await Model.findOne({
         _id: id
     })
 
-    foundProducto.descripcion = body.descripcion;
-    foundProducto.descuento = body.descuento;
-    foundProducto.estado = body.estado;
-    foundProducto.foto_producto = body.foto_producto;
-    foundProducto.id_laboratorio = body.id_laboratorio;
-    foundProducto.precio_compra = body.precio_compra;
-    foundProducto.precio_venta = body.precio_venta;
-    foundProducto.stock = body.stock;
-    foundProducto.stock_minimo = body.stock_minimo;
-    foundProducto.tipo = body.tipo;
-    foundProducto.fecha_actualizacion = body.fecha_actualizacion;
-    foundProducto.venta_sujeta = body.venta_sujeta;
-    foundProducto.stock_caja = body.stock_caja;
-    foundProducto.stock_tableta = body.stock_tableta;
-    foundProducto.precio_venta_caja = body.precio_venta_caja;
-    foundProducto.precio_venta_tableta = body.precio_venta_tableta;
-    foundProducto.precio_venta_unidad = body.precio_venta_unidad;
+    foundProducto.descripcion = body.descripcion || foundProducto.descripcion;
+    foundProducto.descuento = body.descuento || foundProducto.descuento;
+    foundProducto.estado = body.estado || foundProducto.estado;
+    foundProducto.foto_producto = body.foto_producto || foundProducto.foto_producto;
+    foundProducto.id_laboratorio = body.id_laboratorio || foundProducto.id_laboratorio;
+    foundProducto.precio_compra = body.precio_compra || foundProducto.precio_compra;
+    foundProducto.precio_compra_caja = body.precio_compra_caja || foundProducto.precio_compra_caja;
+    foundProducto.precio_compra_tableta = body.precio_compra_tableta || foundProducto.precio_compra_tableta;
+    foundProducto.stock = body.stock + foundProducto.stock;
+    foundProducto.stock_minimo = body.stock_minimo || foundProducto.stock_minimo;
+    foundProducto.tipo = body.tipo || foundProducto.tipo;
+    foundProducto.fecha_actualizacion = hoy;
+    foundProducto.venta_sujeta = body.venta_sujeta || foundProducto.venta_sujeta;
+    foundProducto.stock_caja = body.stock_caja || foundProducto.stock_caja;
+    foundProducto.stock_tableta = body.stock_tableta || foundProducto.stock_tableta;
+    foundProducto.precio_venta = body.precio_venta || foundProducto.precio_venta;
+    foundProducto.precio_venta_caja = body.precio_venta_caja || foundProducto.precio_venta_caja;
+    foundProducto.precio_venta_tableta = body.precio_venta_tableta || foundProducto.precio_venta_tableta;
+
 
     const newProducto = await foundProducto.save();
     return newProducto;
