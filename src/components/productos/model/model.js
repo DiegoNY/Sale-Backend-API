@@ -27,6 +27,7 @@ const myScheme = new Schema({
     venta_sujeta: String,
     stock_caja: Number,
     stock_tableta: Number,
+    fecha_vencimiento:String,
 });
 
 const Model = mongoose.model('productos', myScheme);

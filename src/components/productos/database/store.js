@@ -75,6 +75,7 @@ async function updateProducto(id, body) {
     foundProducto.precio_venta = body.precio_venta || foundProducto.precio_venta;
     foundProducto.precio_venta_caja = body.precio_venta_caja || foundProducto.precio_venta_caja;
     foundProducto.precio_venta_tableta = body.precio_venta_tableta || foundProducto.precio_venta_tableta;
+    foundProducto.fecha_vencimiento = body.fecha_vencimiento || foundProducto.fecha_vencimiento;
 
 
     const newProducto = await foundProducto.save();

@@ -10,6 +10,7 @@ function sumarStockProductosComprados(productos = []) {
             acumulador[objeto._id] = {
                 _id: objeto._id,
                 stock_comprado: Number(objeto.stock_comprado),
+                fecha_vencimiento : objeto.fecha_vencimiento,
             };
         } else {
             acumulador[objeto._id].stock_comprado += Number(objeto.stock_comprado);
@@ -23,11 +24,11 @@ function sumarStockProductosComprados(productos = []) {
     return productosSumados;
 }
 
-function actualizarStockProductosComprados(productos = []) {
+function actualizarStockProductosComprados(productos = [] ) {
     const producto = sumarStockProductosComprados(productos)
 
     for (let key in producto) {
-        update(producto[key]._id, { stock: producto[key].stock_comprado })
+        update(producto[key]._id, { stock: producto[key].stock_comprado, fecha_vencimiento: producto[key].fecha_vencimiento })
     }
 
 }
