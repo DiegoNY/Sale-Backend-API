@@ -8,11 +8,11 @@ router.get('/', (req, res) => {
 
 
     const filterCompra = req.query.id || null;
-    const recientes = req.query.recientes || false;
+    const skip = req.query.skip || false;
+    const limite = req.query.limite || false;
+    const ventasRecientes = req.query.recientes || false;
 
-    console.log(req.query);
-
-    controller.get(filterCompra, recientes)
+    controller.get(filterCompra, skip, limite, ventasRecientes)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })
@@ -33,7 +33,15 @@ router.post('/', (req, res) => {
 
         })
         .catch(e => {
-            response.error(req, res, 'Informacion requerida', 400, e)
+            let error = '';
+
+            error = response.MESSAGES_ERROR.INFORMACION_REQUERIDA.message;
+
+            if (e.message.includes('E11000')) {
+                error = response.MESSAGES_ERROR.LLAVE_DUPLICADA.message;
+            }
+
+            response.error(req, res, error, 400, e)
         });
 
 })

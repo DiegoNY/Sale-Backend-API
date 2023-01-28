@@ -5,14 +5,9 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
+    const filetrSerieVenta = req.query.id || null;
 
-
-    const filterCompra = req.query.id || null;
-    const recientes = req.query.recientes || false;
-
-    console.log(req.query);
-
-    controller.get(filterCompra, recientes)
+    controller.get(filetrSerieVenta)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })
@@ -24,16 +19,14 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
 
-    console.log(req.body);
-
-    controller.add(req.body)
+    controller.add(req.body.numero)
         .then((data) => {
 
             response.successDataApiV1(req, res, [{ error: "", body: data }], 201)
 
         })
         .catch(e => {
-            response.error(req, res, 'Informacion requerida', 400, e)
+            response.error(req, res, 'Informacion requerida', 400, 'Error al registrar codigo de barras')
         });
 
 })
@@ -42,7 +35,7 @@ router.put('/:id', (req, res) => {
 
     controller.update(req.params.id, req.body)
         .then((data) => {
-            response.successDataApiV1(req, res, data, 200)
+            response.success(req, res, data, 200)
         })
         .catch(e => {
             response.error(req, res, 'Error interno', 500, e)
@@ -53,14 +46,7 @@ router.put('/:id', (req, res) => {
 
 
 router.delete('/:id', (req, res) => {
-
-    controller.delete(req.params.id)
-        .then((data) => {
-            response.success(req, res, data, 202);
-        })
-        .catch(e => {
-            response.error(req, res, 'Error interno', 500, e);
-        })
+    // controller.updateCodigoBarras()
 })
 
 module.exports = router;

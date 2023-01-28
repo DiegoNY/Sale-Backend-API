@@ -1,18 +1,22 @@
 const express = require('express');
-const codigo_barras = require('../components/codigo_barras/network')
-const usuarios = require('../components/usuarios/network')
-const productos = require('../components/productos/network')
-const clientes = require('../components/clientes/network')
-const laboratorios = require('../components/laboratorio/network')
-const moneda = require('../components/moneda/network')
-const proveedor = require('../components/proveedor/network')
-const tipoDocumento = require('../components/tipo_documento/network')
+const codigo_barras = require('../components/codigo_barras/network');
+const usuarios = require('../components/usuarios/network');
+const productos = require('../components/productos/network');
+const clientes = require('../components/clientes/network');
+const laboratorios = require('../components/laboratorio/network');
+const moneda = require('../components/moneda/network');
+const proveedor = require('../components/proveedor/network');
+const tipoDocumento = require('../components/tipo_documento/network');
 const stocks = require('../components/stock/network');
-const listacompra = require('../components/compras/network')
+const listacompra = require('../components/compras/network');
+const apertura = require('../components/caja/network');
+const venta = require('../components/venta/network');
+const serieVenta = require('../components/series_ventas/network');
 const { socket } = require('../socket');
 const fecha = new Date()
 
 const routes = function (server) {
+    
     server.use('/api/v2/codigo_barras', codigo_barras);
     server.use('/api/v2/producto', productos);
     server.use('/api/v2/usuario', usuarios);
@@ -23,6 +27,9 @@ const routes = function (server) {
     server.use('/api/v2/tipo_documento', tipoDocumento);
     server.use('/api/v2/stocks', stocks);
     server.use('/api/v2/lista_compra', listacompra);
+    server.use('/api/v2/caja', apertura);
+    server.use('/api/v2/venta', venta);
+    server.use('/api/v2/serie_ventas', serieVenta);
 
     socket.io.on('connection', socket => {
 

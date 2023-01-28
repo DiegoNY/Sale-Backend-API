@@ -6,31 +6,26 @@ let fecha = hoy.toLocaleDateString("es-ES", {
     year: 'numeric',
 })
 
-let hora = hoy.toLocaleTimeString("es-ES", {
-    hour12: false
-})
-
-
-const dataRegistro = `${fecha} - ${hora}`;
-
-function addMoneda(monedaData) {
+function addApertura(aperturaData) {
 
     return new Promise((resolve, reject) => {
         try {
+            //tipo de identificacion 01 o 06  uno para DNI 06 para RUC 
 
-            const moneda = {
-                abreviatura: monedaData.abreviatura,
-                nombre: monedaData.nombre,
-                fecha_creacion: fecha,
+            const apertura = {
+                fecha: fecha,
+                dni: aperturaData.dni,
                 estado: 1,
-                simbolo: monedaData.simbolo,
+                dinero_apertura: aperturaData.dinero_apertura,
+                punto_venta: aperturaData.punto_venta,
+                usuario: aperturaData.usuario,
             }
 
-            store.add(moneda);
-            resolve(moneda);
+            store.add(apertura);
+            resolve(apertura);
         } catch (e) {
 
-            reject('[Error al agregar usuario]' + e)
+            reject('[Error al registrar APERTURA]' + e)
 
         }
 
@@ -39,19 +34,19 @@ function addMoneda(monedaData) {
 
 }
 
-function getMoneda(filterMoneda) {
+function getApertura(filterApertura) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filterMoneda));
+            resolve(store.list(filterApertura));
         } catch (e) {
-            rejec(`[Error al mostrar MONEDA] ${e}`);
+            rejec(`[Error al mostrar APERTURA ] ${e}`);
         }
     })
 }
 
-function updateMoneda(id, body) {
+function updateApertura(id, body) {
     return new Promise(async (resolve, reject) => {
         console.log(id, body)
         if (!id || !body) {
@@ -63,12 +58,12 @@ function updateMoneda(id, body) {
             resolve(result);
 
         } catch (e) {
-            return reject(`[Error al actualizar MONEDA ] ${e}`)
+            return reject(`[Error al actualizar la APERTURA ] ${e}`)
         }
     })
 }
 
-function deleteMoneda(id) {
+function deleteApertura(id) {
     return new Promise(async (resolve, reject) => {
         if (!id) {
             return reject('Los datos son invalidos');
@@ -78,14 +73,14 @@ function deleteMoneda(id) {
             const result = store.deleted(id);
             resolve(result);
         } catch (e) {
-            return reject(`[Error al eliminar una MONEDA] ${e}`)
+            return reject(`[Error al eliminar una APERTURA ] ${e}`)
         }
     });
 }
 
 module.exports = {
-    add: addMoneda,
-    get: getMoneda,
-    update: updateMoneda,
-    delete: deleteMoneda,
+    add: addApertura,
+    get: getApertura,
+    update: updateApertura,
+    delete: deleteApertura,
 };

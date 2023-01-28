@@ -1,6 +1,12 @@
 const store = require('../database/store.js');
 const hoy = new Date();
 
+let fecha = hoy.toLocaleDateString("es-ES", {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+})
+
 function addLaboratorio(laboratorioData) {
 
     return new Promise((resolve, reject) => {
@@ -9,7 +15,7 @@ function addLaboratorio(laboratorioData) {
             const laboratorio = {
                 abreviatura: laboratorioData.abreviatura,
                 correo: laboratorioData.correo,
-                fecha_creacion: hoy,
+                fecha_creacion: fecha,
                 direccion: laboratorioData.direccion,
                 estado: 1,
                 nombre: laboratorioData.nombre,

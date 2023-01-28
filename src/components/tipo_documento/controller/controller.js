@@ -1,5 +1,10 @@
 const store = require('../database/store.js');
 const hoy = new Date();
+let fecha = hoy.toLocaleDateString("es-ES", {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+})
 
 function addTipoDocumento(tipoDocumentoData) {
 
@@ -9,7 +14,7 @@ function addTipoDocumento(tipoDocumentoData) {
             const proveedor = {
                 descripcion_caja: tipoDocumentoData.descripcion_caja,
                 nombre: tipoDocumentoData.nombre,
-                fecha_creacion: hoy,
+                fecha_creacion: fecha,
                 direccion: tipoDocumentoData.direccion,
                 max_correlativos: tipoDocumentoData.max_correlativos,
                 estado: tipoDocumentoData.estado || 1,

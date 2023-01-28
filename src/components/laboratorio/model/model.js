@@ -13,6 +13,8 @@ const myScheme = new Schema({
     ruc: Number,
     telefono: Number,
     fecha_actualizacion: String,
+    usuario: String,
+    ip_maquina: String,
 });
 
 const Model = mongoose.model('laboratorios', myScheme);

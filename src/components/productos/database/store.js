@@ -37,22 +37,35 @@ function addProducto(producto) {
 
 }
 
-async function getProducto(filterProducto) {
+async function getProducto(filterProducto, recientes, ventas) {
 
 
     let filter = { estatus: '1' }
+    let productos = [];
+
     if (filterProducto !== null) {
         filter = { _id: filterProducto }
     }
 
-    const productos = await Model.find(filter);
+    if (!recientes && !ventas) {
+        productos = await Model.find(filter);
+    }
+
+    if (ventas) {
+        productos = await Model.find({ estatus: '1', stock: { $gt: 0 } });
+    }
+
+    if (recientes) {
+        productos = await Model.find(filter).sort({ _id: -1 }).limit(recientes).exec();
+    }
+
     return productos;
 
 }
 
-async function updateProducto(id, body) {
-    console.log(body);
-    console.log(id);
+async function updateProducto(id, body, actualizar_stock_venta = false) {
+    // console.log(body);
+    // console.log(id);
     const foundProducto = await Model.findOne({
         _id: id
     })
@@ -65,7 +78,9 @@ async function updateProducto(id, body) {
     foundProducto.precio_compra = body.precio_compra || foundProducto.precio_compra;
     foundProducto.precio_compra_caja = body.precio_compra_caja || foundProducto.precio_compra_caja;
     foundProducto.precio_compra_tableta = body.precio_compra_tableta || foundProducto.precio_compra_tableta;
-    foundProducto.stock = body.stock + foundProducto.stock;
+
+    if (!actualizar_stock_venta) foundProducto.stock = body.stock + foundProducto.stock;
+    if (!!actualizar_stock_venta) foundProducto.stock = Number(foundProducto.stock) - Number(body.stock);
     foundProducto.stock_minimo = body.stock_minimo || foundProducto.stock_minimo;
     foundProducto.tipo = body.tipo || foundProducto.tipo;
     foundProducto.fecha_actualizacion = hoy;
@@ -76,6 +91,7 @@ async function updateProducto(id, body) {
     foundProducto.precio_venta_caja = body.precio_venta_caja || foundProducto.precio_venta_caja;
     foundProducto.precio_venta_tableta = body.precio_venta_tableta || foundProducto.precio_venta_tableta;
     foundProducto.fecha_vencimiento = body.fecha_vencimiento || foundProducto.fecha_vencimiento;
+    foundProducto.lote = body.lote || foundProducto.lote;
 
 
     const newProducto = await foundProducto.save();

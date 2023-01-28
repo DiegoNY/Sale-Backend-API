@@ -17,6 +17,8 @@ const myScheme = new Schema({
     usuario: String,
     fecha_actualizacion: String,
     estatus: Number,
+    usuario_creacion: String,
+    ip_maquina: String,
 });
 
 const Model = mongoose.model('usuarios', myScheme);

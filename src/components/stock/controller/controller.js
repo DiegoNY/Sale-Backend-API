@@ -1,5 +1,10 @@
 const store = require('../database/store.js');
 const hoy = new Date();
+let fecha = hoy.toLocaleDateString("es-ES", {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+})
 
 function addStock(stockData) {
 
@@ -8,7 +13,7 @@ function addStock(stockData) {
 
             const proveedor = {
                 stock: stockData.stock,
-                fecha_registro: hoy,
+                fecha_registro: fecha,
                 estado: 1,
                 id_producto: stockData.id_producto,
             }

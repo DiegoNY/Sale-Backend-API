@@ -8,9 +8,11 @@ router.get('/', (req, res) => {
 
 
     const filterCliente = req.query.id || null;
-    controller.get(filterCliente)
+    console.log(filterCliente);
+    const filterClienteDniORuc = req.query.identificacion || false;
+    controller.get(filterCliente, filterClienteDniORuc)
         .then((data) => {
-            response.successDataApiV1(req, res, data, 200)
+            response.successDataApiV1(req, res, [{ error: false, body: data }], 200)
         })
         .catch(e => {
             response.error(req, res, 'Error inesperado', 500, e)

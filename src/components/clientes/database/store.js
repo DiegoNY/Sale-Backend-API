@@ -5,14 +5,24 @@ const hoy = new Date();
 function addCliente(cliente) {
 
     const myCliente = new Model(cliente);
-    myCliente.save();
+    myCliente.save()
+        .then(cliente => console.log(cliente))
+        .catch(e => {
+            console.log('[ Error al registrar CLIENTE ]' + e)
+        });
 }
 
-async function getCliente(filterCliente) {
+async function getCliente(filterCliente, filterClienteIdentificacion = false) {
+
 
 
     let filter = { estado: 1 }
-    if (filterCliente !== null) {
+
+    if (filterCliente !== null && !!filterClienteIdentificacion) {
+        filter = { dni: Number(filterCliente) }
+    }
+
+    if (filterCliente !== null && !filterClienteIdentificacion) {
         filter = { _id: filterCliente }
     }
 
@@ -26,7 +36,7 @@ async function updateCliente(id, body) {
         _id: id
     })
 
-    
+
     foundCliente.correo = body.correo;
     foundCliente.descripcion = body.descripcion;
     foundCliente.direccion = body.direccion;

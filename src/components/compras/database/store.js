@@ -10,7 +10,8 @@ function sumarStockProductosComprados(productos = []) {
             acumulador[objeto._id] = {
                 _id: objeto._id,
                 stock_comprado: Number(objeto.stock_comprado),
-                fecha_vencimiento : objeto.fecha_vencimiento,
+                fecha_vencimiento: objeto.fecha_vencimiento,
+                lote: objeto.lote,
             };
         } else {
             acumulador[objeto._id].stock_comprado += Number(objeto.stock_comprado);
@@ -24,11 +25,18 @@ function sumarStockProductosComprados(productos = []) {
     return productosSumados;
 }
 
-function actualizarStockProductosComprados(productos = [] ) {
+function actualizarStockProductosComprados(productos = []) {
     const producto = sumarStockProductosComprados(productos)
 
     for (let key in producto) {
-        update(producto[key]._id, { stock: producto[key].stock_comprado, fecha_vencimiento: producto[key].fecha_vencimiento })
+        update(
+            producto[key]._id,
+            {
+                stock: producto[key].stock_comprado,
+                fecha_vencimiento: producto[key].fecha_vencimiento,
+                lote: producto[key].lote
+            }
+        )
     }
 
 }
@@ -52,15 +60,24 @@ function addListaCompra(compra) {
 
 }
 
-async function getListaCompra(filterCompra) {
+async function getListaCompra(filterCompra, recientes) {
 
 
     let filter = { estado: 1 }
+    let listacompra;
+
     if (filterCompra !== null) {
         filter = { _id: filterCompra }
     }
 
-    const listacompra = await Model.find(filter);
+    if (recientes) {
+        listacompra = await Model.find().sort({ _id: -1 }).limit(recientes).exec();
+    }
+
+    if (!recientes) {
+        listacompra = await Model.find(filter);
+    }
+
     return listacompra;
 
 }

@@ -11,6 +11,8 @@ const myScheme = new Schema({
     estado: Number,
     nombre: String,
     simbolo: String,
+    usuario: String,
+    ip_maquina: String,
 });
 
 const Model = mongoose.model('monedas', myScheme);

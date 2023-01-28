@@ -1,12 +1,19 @@
 const store = require('../database/store.js');
 const hoy = new Date();
+let fecha = hoy.toLocaleDateString("es-ES", {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+})
+
+let hora = hoy.toLocaleTimeString();
 
 
 function addListaCompra(listaCompraData) {
 
     return new Promise((resolve, reject) => {
         try {
-            console.log(listaCompraData.productos);
+
 
             const listacompra = {
                 efectivo: listaCompraData.efectivo,
@@ -21,7 +28,8 @@ function addListaCompra(listaCompraData) {
                 total: listaCompraData.total,
                 vuelto: listaCompraData.vuelto,
                 estado: 1,
-                fecha_registro: hoy,
+                fecha_registro: fecha,
+                hora_registro: hora,
             }
 
             store.add(listacompra);
@@ -37,12 +45,12 @@ function addListaCompra(listaCompraData) {
 
 }
 
-function getListaCompra(filtercompra) {
+function getListaCompra(filtercompra, recientes) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filtercompra));
+            resolve(store.list(filtercompra, recientes));
         } catch (e) {
             rejec(`[Error al mostrar lista compra] ${e}`);
         }

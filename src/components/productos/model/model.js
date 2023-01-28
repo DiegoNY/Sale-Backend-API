@@ -15,8 +15,8 @@ const myScheme = new Schema({
     foto_producto: String,
     id_laboratorio: String,
     precio_compra: Number,
-    precio_compra_caja :Number,
-    precio_compra_tableta:Number,
+    precio_compra_caja: Number,
+    precio_compra_tableta: Number,
     precio_venta: Number,
     precio_venta_caja: Number,
     precio_venta_tableta: Number,
@@ -27,7 +27,10 @@ const myScheme = new Schema({
     venta_sujeta: String,
     stock_caja: Number,
     stock_tableta: Number,
-    fecha_vencimiento:String,
+    fecha_vencimiento: String,
+    lote: String,
+    usuario: String,
+    ip_maquina: String,
 });
 
 const Model = mongoose.model('productos', myScheme);

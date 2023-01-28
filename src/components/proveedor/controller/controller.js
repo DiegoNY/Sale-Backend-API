@@ -1,5 +1,10 @@
 const store = require('../database/store.js');
 const hoy = new Date();
+let fecha = hoy.toLocaleDateString("es-ES", {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+})
 
 function addProveedor(usuarioData) {
 
@@ -9,7 +14,7 @@ function addProveedor(usuarioData) {
             const proveedor = {
                 abreviatura: usuarioData.abreviatura,
                 correo: usuarioData.correo,
-                fecha_creacion: hoy,
+                fecha_creacion: fecha,
                 direccion: usuarioData.direccion,
                 estado: 1,
                 nombre: usuarioData.nombre,

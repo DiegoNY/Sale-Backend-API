@@ -9,10 +9,16 @@ const myScheme = new Schema({
     fecha_actualizacion: String,
     descripcion: String,
     direccion: String,
-    dni: Number,
+    dni: {
+        type: Number,
+        require: true,
+        unique: true,
+    },
     estado: Number,
     telefono: Number,
     tipo_identificacion: String,
+    usuario: String,
+    ip_maquina: String,
 });
 
 const Model = mongoose.model('clientes', myScheme);

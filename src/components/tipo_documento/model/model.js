@@ -15,6 +15,8 @@ const myScheme = new Schema({
     tipo: String,
     serie: String,
     fecha_actualizacion: String,
+    usuario: String,
+    ip_maquina: String,
 });
 
 const Model = mongoose.model('tipo_documentos', myScheme);

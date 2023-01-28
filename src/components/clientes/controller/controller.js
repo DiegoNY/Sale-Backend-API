@@ -1,5 +1,11 @@
 const store = require('../database/store.js');
 const hoy = new Date();
+let fecha = hoy.toLocaleDateString("es-ES", {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+})
+
 
 function addCliente(clienteData) {
 
@@ -9,7 +15,7 @@ function addCliente(clienteData) {
 
             const cliente = {
                 correo: clienteData.correo,
-                fecha_creacion: hoy,
+                fecha_creacion: fecha,
                 descripcion: clienteData.descripcion,
                 direccion: clienteData.direccion,
                 dni: clienteData.dni_ruc,
@@ -31,12 +37,12 @@ function addCliente(clienteData) {
 
 }
 
-function getCliente(filterCliente) {
+function getCliente(filterCliente, filterClienteDniORuc) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filterCliente));
+            resolve(store.list(filterCliente, filterClienteDniORuc));
         } catch (e) {
             rejec(`[Error al mostrar CLIENTE ] ${e}`);
         }

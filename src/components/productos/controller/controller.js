@@ -10,7 +10,6 @@ let hora = hoy.toLocaleTimeString("es-ES", {
     hour12: false
 })
 
-let fecha_registro = `${fecha} - ${hora}`
 
 function addProducto(productoData, file) {
 
@@ -39,15 +38,15 @@ function addProducto(productoData, file) {
             foto_producto: fileUrl,
             id_laboratorio: productoData.id_laboratorio,
             precio_compra: productoData.precio_compra,
-            precio_compra_caja : productoData.precio_compra_caja,
-            precio_compra_tableta : productoData.precio_compra_tableta,
+            precio_compra_caja: productoData.precio_compra_caja,
+            precio_compra_tableta: productoData.precio_compra_tableta,
             precio_venta: productoData.precio_venta,
             precio_venta_caja: productoData.precio_venta_caja,
             precio_venta_tableta: productoData.precio_venta_tableta,
             stock: productoData.stock,
             stock_minimo: productoData.stock_minimo,
             tipo: productoData.tipo,
-            fecha_registro: fecha_registro,
+            fecha_registro: fecha,
             venta_sujeta: productoData.venta_sujeta,
             stock_caja: productoData.stock_caja,
             stock_tableta: productoData.stock_tableta
@@ -60,16 +59,16 @@ function addProducto(productoData, file) {
 
 }
 
-function getProducto(filterCodigoBarra) {
+function getProducto(filterCodigoBarra, recientes, ventas) {
 
     return new Promise((resolve, rejec) => {
-        resolve(store.list(filterCodigoBarra));
+        resolve(store.list(filterCodigoBarra, recientes, ventas));
     })
 }
 
 function updateProducto(id, body) {
     return new Promise(async (resolve, reject) => {
-        console.log(id, body)
+        // console.log(id, body)
         if (!id || !body) {
             return reject('Los datos son invalidos')
         }
