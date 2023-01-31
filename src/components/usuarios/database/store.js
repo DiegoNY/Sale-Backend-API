@@ -57,9 +57,27 @@ async function deletedUsuario(id) {
     return 'Deleted';
 }
 
+async function velidationUsuario(body) {
+
+    const foundUsuario = await Model.findOne({
+        email: body.usuario,
+        clave: body.contraseña
+    })
+
+    console.log(foundUsuario);
+    if (foundUsuario) {
+        return foundUsuario;
+    }
+
+    if (!foundUsuario) {
+        throw new Error('Usuario no encontrado');
+    }
+
+}
 module.exports = {
     add: addUsuario,
     list: getUsuario,
     update: updateUsuario,
     deleted: deletedUsuario,
+    validation: velidationUsuario,
 }

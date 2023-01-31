@@ -75,7 +75,7 @@ async function getListaCompra(filterCompra, recientes) {
     }
 
     if (!recientes) {
-        listacompra = await Model.find(filter);
+        listacompra = await Model.find(filter).sort({ _id: -1 });
     }
 
     return listacompra;

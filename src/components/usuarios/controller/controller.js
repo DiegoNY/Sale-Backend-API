@@ -4,7 +4,7 @@ function addUsuario(usuarioData) {
 
     return new Promise((resolve, reject) => {
         try {
-            
+
             const usuario = {
                 cargo: usuarioData.cargo,
                 clave: usuarioData.clave,
@@ -66,9 +66,23 @@ function deleteUsuario(id) {
     });
 }
 
+function validationUsuario(body) {
+
+    return new Promise((resolve, reject) => {
+        if (!body.usuario || !body.contraseña) {
+            return reject('Datos invalidos');
+        }
+
+        const result = store.validation(body);
+        resolve(result);
+
+    })
+}
+
 module.exports = {
     add: addUsuario,
     get: getUsuario,
     update: updateUsuario,
     delete: deleteUsuario,
+    validation: validationUsuario,
 };

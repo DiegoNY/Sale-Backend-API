@@ -22,7 +22,17 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
 
-    console.log(req.body);
+    if (req.query.login) {
+
+        controller.validation(req.body)
+            .then((login) => {
+                response.successDataApiV1(req, res, [{ error: false, body: login }], 202)
+            })
+            .catch(e => {
+                response.error(req, res, 'El usuario no esta registrado', 203, e)
+            })
+        return;
+    }
 
     controller.add(req.body)
         .then((usuarios) => {
@@ -37,7 +47,7 @@ router.post('/', (req, res) => {
 })
 
 router.put('/:id', (req, res) => {
-    
+
     controller.update(req.params.id, req.body)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
