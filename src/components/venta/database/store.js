@@ -78,7 +78,7 @@ function addVenta(venta) {
                 socket.io.emit(
                     'ventas_recientes',
                     {
-                        usuario: 'PEPE',
+                        usuario: 'administrador',
                         hora: listaventa.hora_registro,
                         venta: listaventa,
                     }
