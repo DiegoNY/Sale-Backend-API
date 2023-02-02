@@ -34,17 +34,3 @@ server.listen(8080, () => {
     console.log('La aplicacion esta corriendo en http://localhost:8080')
 
 });
-
-// const os = require('os');
-
-// const interfaces = os.networkInterfaces();
-// const addresses = [];
-// for (const k in interfaces) {
-//     for (const k2 in interfaces[k]) {
-//         const address = interfaces[k][k2];
-//         if (address.family === 'IPv4' && !address.internal) {
-//             addresses.push(address.address);
-//         }
-//     }
-// }
-// console.log(addresses);
