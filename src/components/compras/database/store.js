@@ -11,6 +11,9 @@ function sumarStockProductosComprados(productos = []) {
                 _id: objeto._id,
                 stock_comprado: Number(objeto.stock_comprado),
                 fecha_vencimiento: objeto.fecha_vencimiento,
+                precio_venta_caja: objeto.precio_venta_caja,
+                precio_venta_tableta: objeto.precio_venta_tableta,
+                precio_venta: objeto.precio_venta,
                 lote: objeto.lote,
             };
         } else {
@@ -34,7 +37,11 @@ function actualizarStockProductosComprados(productos = []) {
             {
                 stock: producto[key].stock_comprado,
                 fecha_vencimiento: producto[key].fecha_vencimiento,
-                lote: producto[key].lote
+                lote: producto[key].lote,
+                precio_venta_caja: producto[key].precio_venta_caja,
+                precio_venta_tableta: producto[key].precio_venta_tableta,
+                precio_venta: producto[key].precio_venta,
+
             }
         )
     }
