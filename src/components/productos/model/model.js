@@ -31,6 +31,8 @@ const myScheme = new Schema({
     lote: String,
     usuario: String,
     ip_maquina: String,
+    fecha_consultas: Date,
+
 });
 
 const Model = mongoose.model('productos', myScheme);

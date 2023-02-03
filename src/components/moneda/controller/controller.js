@@ -24,6 +24,8 @@ function addMoneda(monedaData) {
                 fecha_creacion: fecha,
                 estado: 1,
                 simbolo: monedaData.simbolo,
+                fecha_consultas: new Date()
+
             }
 
             store.add(moneda);

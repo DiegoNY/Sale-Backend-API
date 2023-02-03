@@ -19,6 +19,8 @@ const myScheme = new Schema({
     estatus: Number,
     usuario_creacion: String,
     ip_maquina: String,
+    fecha_consultas: Date,
+
 });
 
 const Model = mongoose.model('usuarios', myScheme);

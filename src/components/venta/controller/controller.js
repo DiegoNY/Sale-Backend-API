@@ -32,6 +32,7 @@ function addListaVenta(listaVentaData) {
                 estado: 1,
                 fecha_registro: fecha,
                 hora_registro: hora,
+                fecha_consultas: new Date()
             }
 
             store.add(listaventa)
@@ -52,12 +53,12 @@ function addListaVenta(listaVentaData) {
 
 }
 
-function getListaVenta(filterventa, skip, limit, ventasRecientes) {
+function getListaVenta(filterventa, skip, limit, ventasRecientes, diarias) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filterventa, skip, limit, ventasRecientes));
+            resolve(store.list(filterventa, skip, limit, ventasRecientes, diarias));
         } catch (e) {
             rejec(`[Error al mostrar una VENTA ] ${e}`);
         }

@@ -11,6 +11,8 @@ function addSerieVentas(serie) {
             serie: serie.serie,
             numero: serie.numero,
             fecha_registro: new Date(),
+            fecha_consultas: new Date()
+
         }
 
         store.add(serieVenta);
@@ -20,10 +22,10 @@ function addSerieVentas(serie) {
 
 }
 
-function getSerieVenta(filterSerieVenta) {
+function getSerieVenta(filterSerieVenta, tipoSerie) {
 
     return new Promise((resolve, rejec) => {
-        resolve(store.list(filterSerieVenta));
+        resolve(store.list(filterSerieVenta, tipoSerie));
     })
 }
 

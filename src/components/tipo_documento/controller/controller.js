@@ -22,6 +22,8 @@ function addTipoDocumento(tipoDocumentoData) {
                 estatus: 1,
                 serie: tipoDocumentoData.serie,
                 tipo: tipoDocumentoData.tipo,
+                fecha_consultas: new Date()
+
             }
 
             store.add(proveedor);

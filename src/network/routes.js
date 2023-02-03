@@ -12,11 +12,12 @@ const listacompra = require('../components/compras/network');
 const apertura = require('../components/caja/network');
 const venta = require('../components/venta/network');
 const serieVenta = require('../components/series_ventas/network');
+const notaSalida = require('../components/nota_salida/network');
 const { socket } = require('../socket');
 const fecha = new Date()
 
 const routes = function (server) {
-    
+
     server.use('/api/v2/codigo_barras', codigo_barras);
     server.use('/api/v2/producto', productos);
     server.use('/api/v2/usuario', usuarios);
@@ -30,6 +31,7 @@ const routes = function (server) {
     server.use('/api/v2/caja', apertura);
     server.use('/api/v2/venta', venta);
     server.use('/api/v2/serie_ventas', serieVenta);
+    server.use('/api/v2/nota_salida', notaSalida);
 
     socket.io.on('connection', socket => {
 

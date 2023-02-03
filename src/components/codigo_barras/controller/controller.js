@@ -10,6 +10,8 @@ function addCodigoBarras(numero) {
         const codigoBarra = {
             numero: numero,
             date: new Date(),
+            fecha_consultas: new Date()
+
         }
 
         store.add(codigoBarra);

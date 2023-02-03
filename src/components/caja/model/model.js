@@ -11,6 +11,8 @@ const myScheme = new Schema({
     dni: Number,
     usuario: String,
     estado: Number,
+    fecha_consultas: Date,
+
 });
 
 const Model = mongoose.model('checkoutboxes', myScheme);

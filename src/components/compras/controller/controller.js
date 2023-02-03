@@ -30,6 +30,8 @@ function addListaCompra(listaCompraData) {
                 estado: 1,
                 fecha_registro: fecha,
                 hora_registro: hora,
+                fecha_consultas: new Date()
+
             }
 
             store.add(listacompra);

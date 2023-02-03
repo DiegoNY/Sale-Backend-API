@@ -43,6 +43,7 @@ const mySchemeVenta = new Schema({
     correlativo: String,
     usuario: String,
     ip_maquina: String,
+    fecha_consultas: Date,
 });
 
 

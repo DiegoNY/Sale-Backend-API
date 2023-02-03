@@ -8,6 +8,8 @@ const myScheme = new Schema({
     date: Date,
     usuario: String,
     ip_maquina: String,
+    fecha_consultas: Date,
+
 });
 
 const Model = mongoose.model('codigos_barra', myScheme);

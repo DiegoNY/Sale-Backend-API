@@ -37,7 +37,7 @@ function addProducto(producto) {
 
 }
 
-async function getProducto(filterProducto, recientes, ventas) {
+async function getProducto(filterProducto, recientes, ventas, stockBajo) {
 
 
     let filter = { estatus: '1' }
@@ -57,6 +57,11 @@ async function getProducto(filterProducto, recientes, ventas) {
 
     if (recientes) {
         productos = await Model.find(filter).sort({ _id: -1 }).limit(recientes).exec();
+    }
+
+    if (stockBajo) {
+        console.log(stockBajo);
+        productos = await Model.find({ stock: { $gt: 0 } }).sort({ stock: 1 }).limit(stockBajo).exec();
     }
 
     return productos;

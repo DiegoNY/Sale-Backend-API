@@ -11,8 +11,9 @@ router.get('/', (req, res) => {
     const skip = req.query.skip || false;
     const limite = req.query.limite || false;
     const ventasRecientes = req.query.recientes || false;
+    const diarias = req.query.diarias || false;
 
-    controller.get(filterCompra, skip, limite, ventasRecientes)
+    controller.get(filterCompra, skip, limite, ventasRecientes, diarias)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })

@@ -22,6 +22,8 @@ function addCliente(clienteData) {
                 estado: 1,
                 telefono: clienteData.telefono,
                 tipo_identificacion: clienteData.tipo_identificacion,
+                fecha_consultas: new Date()
+
             }
 
             store.add(cliente);

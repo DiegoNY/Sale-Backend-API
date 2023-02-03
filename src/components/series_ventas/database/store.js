@@ -6,11 +6,15 @@ function addSerieVentas(serie_ventas) {
     mySerieVenta.save();
 }
 
-async function getSerieVentas(filterSerieVentas) {
+async function getSerieVentas(filterSerieVentas, tipoSerie) {
     console.log(filterSerieVentas)
     let filter = {}
     if (filterSerieVentas !== null) {
         filter = { _id: filterSerieVentas }
+    }
+
+    if (tipoSerie) {
+        filter = { serie: tipoSerie }
     }
 
     const series_ventas = await Model.find(filter);

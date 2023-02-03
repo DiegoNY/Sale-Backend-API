@@ -49,7 +49,9 @@ function addProducto(productoData, file) {
             fecha_registro: fecha,
             venta_sujeta: productoData.venta_sujeta,
             stock_caja: productoData.stock_caja,
-            stock_tableta: productoData.stock_tableta
+            stock_tableta: productoData.stock_tableta,
+            fecha_consultas: new Date()
+
         }
 
         const response = store.add(producto);
@@ -59,10 +61,10 @@ function addProducto(productoData, file) {
 
 }
 
-function getProducto(filterCodigoBarra, recientes, ventas) {
+function getProducto(filterCodigoBarra, recientes, ventas, stockBajo) {
 
     return new Promise((resolve, rejec) => {
-        resolve(store.list(filterCodigoBarra, recientes, ventas));
+        resolve(store.list(filterCodigoBarra, recientes, ventas, stockBajo));
     })
 }
 

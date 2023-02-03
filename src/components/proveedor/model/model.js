@@ -15,6 +15,8 @@ const myScheme = new Schema({
     fecha_actualizacion: String,
     usuario: String,
     ip_maquina: String,
+    fecha_consultas: Date,
+
 });
 
 const Model = mongoose.model('proveedors', myScheme);

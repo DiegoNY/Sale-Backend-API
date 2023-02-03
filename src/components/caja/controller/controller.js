@@ -19,6 +19,7 @@ function addApertura(aperturaData) {
                 dinero_apertura: aperturaData.dinero_apertura,
                 punto_venta: aperturaData.punto_venta,
                 usuario: aperturaData.usuario,
+                fecha_consultas: new Date()
             }
 
             store.add(apertura);

@@ -95,7 +95,7 @@ function addVenta(venta) {
 
 }
 
-async function getVenta(filterVenta, skip, limite, ventasRecientes) {
+async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias) {
 
     let filter = { estado: 1 }
 
@@ -112,6 +112,60 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes) {
 
         const listaVentas = await Model.find().sort({ _id: -1 }).limit(ventasRecientes).exec();
         return listaVentas;
+    }
+
+    if (diarias) {
+        let fechasConsulta = JSON.parse(diarias);
+        let fechaStart = new Date(fechasConsulta.desde);
+        let fechaEnd = new Date(fechasConsulta.hasta);
+
+        const daysOfWeek = ['', 'Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+
+
+        const listaVentasDiarias = await Model.aggregate([
+            {
+                $match: {
+                    fecha_consultas: {
+                        $gte: fechaStart,
+                        $lte: fechaEnd
+                    }
+                }
+            },
+            {
+                $project: {
+                    fecha_consultas: 1,
+                    dayOfWeek: { $dayOfWeek: "$fecha_consultas" },
+                    dayName: {
+                        $let: {
+                            vars: {
+                                dayNumber: { $mod: [{ $dayOfWeek: '$fecha_consultas' }, 7] }
+                            },
+                            in: { $arrayElemAt: [daysOfWeek, "$$dayNumber"] }
+                        }
+                    }
+                    // date: {
+                    //     $dateToString: {
+                    //         format: "%Y-%m-%d",
+                    //         date: "$fecha_consultas"
+                    //     }
+
+                    // }
+                }
+            },
+            {
+                //Si se quiere acumular por fecha cambiar el nombre del _id por date descomentarlo
+                $group: {
+                    _id: "$dayName",
+                    // dia: { $first: "$date" },
+                    totalVentas: { $sum: 1 }
+                }
+            }
+        ]);
+
+
+
+        return [{ consultando: fechasConsulta, resultado: listaVentasDiarias }]
+
     }
 
     const listaVenta = await Model.find(filter);

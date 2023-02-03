@@ -3,11 +3,10 @@ const controller = require('./controller/controller.js')
 const response = require('../../network/response.js')
 const router = express.Router();
 
-
 router.get('/', (req, res) => {
     const filetrSerieVenta = req.query.id || null;
 
-    controller.get(filetrSerieVenta)
+    controller.get(filetrSerieVenta, tipoSerie = false)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })

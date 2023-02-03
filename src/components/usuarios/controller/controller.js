@@ -17,6 +17,8 @@ function addUsuario(usuarioData) {
                 tipo: usuarioData.tipo,
                 tipo_impresion: usuarioData.tipo_impresion,
                 usuario: usuarioData.usuario,
+                fecha_consultas: new Date()
+
             }
 
             store.add(usuario);

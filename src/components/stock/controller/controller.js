@@ -16,6 +16,8 @@ function addStock(stockData) {
                 fecha_registro: fecha,
                 estado: 1,
                 id_producto: stockData.id_producto,
+                fecha_consultas: new Date()
+
             }
 
             store.add(proveedor);

@@ -20,6 +20,8 @@ function addProveedor(usuarioData) {
                 nombre: usuarioData.nombre,
                 ruc: usuarioData.ruc,
                 telefono: usuarioData.telefono,
+                fecha_consultas: new Date()
+
             }
 
             store.add(proveedor);
