@@ -81,6 +81,7 @@ function addVenta(venta) {
                         usuario: 'administrador',
                         hora: listaventa.hora_registro,
                         venta: listaventa,
+                        _id: listaventa.usuario
                     }
                 )
                 resolve(listaventa);
@@ -95,7 +96,7 @@ function addVenta(venta) {
 
 }
 
-async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias) {
+async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usuario) {
 
     let filter = { estado: 1 }
 
@@ -166,6 +167,12 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias) {
 
         return [{ consultando: fechasConsulta, resultado: listaVentasDiarias }]
 
+    }
+
+    if (usuario) {
+        // console.log(usuario);
+        const listaVenta = await Model.find({ usuario: usuario }).exec();
+        return listaVenta
     }
 
     const listaVenta = await Model.find(filter);

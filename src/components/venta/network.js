@@ -12,8 +12,9 @@ router.get('/', (req, res) => {
     const limite = req.query.limite || false;
     const ventasRecientes = req.query.recientes || false;
     const diarias = req.query.diarias || false;
+    const usuario = req.query.usuario || false;
 
-    controller.get(filterCompra, skip, limite, ventasRecientes, diarias)
+    controller.get(filterCompra, skip, limite, ventasRecientes, diarias, usuario)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })
