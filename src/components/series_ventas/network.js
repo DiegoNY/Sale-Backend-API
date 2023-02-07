@@ -4,9 +4,9 @@ const response = require('../../network/response.js')
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    const filetrSerieVenta = req.query.id || null;
+    const filetrSerieVenta = req.query.id || false;
 
-    controller.get(filetrSerieVenta, tipoSerie = false)
+    controller.get(filetrSerieVenta, filetrSerieVenta)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })

@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
     const limite = req.query.limite || false;
     const notasRecientes = req.query.recientes || false;
     const serie = req.query.serie || false
-    console.log(serie);
+   
     controller.get(filterNotaSalida, skip, limite, notasRecientes, serie)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)

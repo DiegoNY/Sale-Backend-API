@@ -170,8 +170,16 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
     }
 
     if (usuario) {
-        // console.log(usuario);
-        const listaVenta = await Model.find({ usuario: usuario }).exec();
+        //Se obtiene el dia actual se ingresa el comienzo de dia y el fin del dia 
+        //para poder consultar por fecha  
+        const hoy = new Date();
+        const comienzoDia = new Date(hoy.setHours(0, 0, 0, 0));
+        const finDeDia = new Date(hoy.setHours(23, 59, 59, 999));
+
+        const listaVenta = await Model.find({
+            usuario: usuario, fecha_consultas: { $gt: comienzoDia, $lt: finDeDia }
+        });
+        
         return listaVenta
     }
 
