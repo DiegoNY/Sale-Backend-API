@@ -46,6 +46,7 @@ const mySchemeListaCompra = new Schema({
     hora_registro: String,
     usuario: String,
     ip_maquina: String,
+    ruc_proveedor: String,
 });
 
 const Model = mongoose.model('listacompra', mySchemeListaCompra);
