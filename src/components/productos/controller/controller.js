@@ -6,13 +6,7 @@ let fecha = hoy.toLocaleDateString("es-ES", {
     year: 'numeric',
 })
 
-let hora = hoy.toLocaleTimeString("es-ES", {
-    hour12: false
-})
-
-
 function addProducto(productoData, file) {
-
 
     return new Promise((resolve, reject) => {
         if (!productoData.codigo_barras) {
@@ -25,7 +19,7 @@ function addProducto(productoData, file) {
         let fileUrl = '';
         if (file) {
             //cambiar url por la carpeta en la que se sirven los estaticos 
-            fileUrl = 'http://192.168.1.43:8080/apiv2/public/files/' + file.filename;
+            fileUrl = 'http://192.168.1.110:8080/imagen/' + file.filename;
         }
 
         const producto = {

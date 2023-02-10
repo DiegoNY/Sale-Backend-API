@@ -14,8 +14,12 @@ const mySchemeProductos = new Schema({
     total: Number,
     id_compra_producto: Number,
     foto_producto: String,
-    stock_vendido: Number,
+    stock_vendido: {
+        type: Number,
+        require: true,
+    },
     cantidad_comprada: Number,
+    medida: String
 })
 
 const mySchemeVenta = new Schema({

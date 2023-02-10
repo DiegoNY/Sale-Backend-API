@@ -15,7 +15,8 @@ function addNotaSalida(notaSalidaData) {
 
 
             const notaSalida = {
-                solicitante: notaSalidaData.cliente,
+                tipo: notaSalidaData.tipo || 'SALIDA',
+                solicitante: notaSalidaData.solicitante,
                 fecha: notaSalidaData.fecha,
                 motivo: notaSalidaData.motivo,
                 productos: notaSalidaData.productos,
@@ -23,7 +24,7 @@ function addNotaSalida(notaSalidaData) {
                 serie: notaSalidaData.serie,
                 correlativo: notaSalidaData.correlativo,
                 estado: 1,
-                fecha_registro: fecha,
+                fecha_registro: `${hoy.toISOString()}`.substring(0, 10),
                 hora_registro: hora,
                 fecha_consultas: new Date()
 

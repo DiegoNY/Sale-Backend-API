@@ -1,18 +1,18 @@
 const store = require('../database/store.js');
-const hoy = new Date();
-let fecha = hoy.toLocaleDateString("es-ES", {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-})
 
-let hora = hoy.toLocaleTimeString();
 
 function addListaVenta(listaVentaData) {
 
     return new Promise((resolve, reject) => {
         try {
+            const hoy = new Date();
+            let fecha = hoy.toLocaleDateString("es-ES", {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+            })
 
+            let hora = hoy.toLocaleTimeString();
 
             const listaventa = {
                 cliente: listaVentaData.cliente,

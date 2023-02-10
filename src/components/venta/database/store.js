@@ -39,6 +39,8 @@ function actualizarStockProductosVendidos(productos = []) {
             },
             true,
         )
+            .then(producto => console.log(producto))
+            .catch(error => console.log(error));
     }
 
 }
@@ -58,10 +60,6 @@ function addVenta(venta) {
         myVenta.save()
             .then(listaventa => {
                 actualizarStockProductosVendidos(venta.productos);
-
-                //se crearan grupos segun la serie que se este usando en estos grupos escucharan los clientes que 
-                //se conecten segun la serie para autoincrementar el Numero 
-
 
                 add({ serie: listaventa.serie, numero: listaventa.numero_venta });
 
@@ -119,8 +117,8 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         let fechasConsulta = JSON.parse(diarias);
         let fechaStart = new Date(fechasConsulta.desde);
         let fechaEnd = new Date(fechasConsulta.hasta);
-
-        const daysOfWeek = ['', 'Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+        console.log(fechaStart);
+        const daysOfWeek = ['','Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
 
 
         const listaVentasDiarias = await Model.aggregate([
@@ -139,25 +137,25 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
                     dayName: {
                         $let: {
                             vars: {
-                                dayNumber: { $mod: [{ $dayOfWeek: '$fecha_consultas' }, 7] }
+                                dayNumber: { $mod: [{ $dayOfWeek: '$fecha_consultas' }, 8] }
                             },
                             in: { $arrayElemAt: [daysOfWeek, "$$dayNumber"] }
                         }
-                    }
-                    // date: {
-                    //     $dateToString: {
-                    //         format: "%Y-%m-%d",
-                    //         date: "$fecha_consultas"
-                    //     }
+                    },
+                    date: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$fecha_consultas"
+                        }
 
-                    // }
+                    }
                 }
             },
             {
                 //Si se quiere acumular por fecha cambiar el nombre del _id por date descomentarlo
                 $group: {
                     _id: "$dayName",
-                    // dia: { $first: "$date" },
+                    dia: { $first: "$date" },
                     totalVentas: { $sum: 1 }
                 }
             }
@@ -179,11 +177,11 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         const listaVenta = await Model.find({
             usuario: usuario, fecha_consultas: { $gt: comienzoDia, $lt: finDeDia }
         });
-        
+
         return listaVenta
     }
 
-    const listaVenta = await Model.find(filter);
+    const listaVenta = await Model.find(filter).sort({ _id: -1 });
     return listaVenta;
 
 }

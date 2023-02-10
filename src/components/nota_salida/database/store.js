@@ -39,6 +39,8 @@ function actualizarStockProductosSalientes(productos = []) {
             },
             true,
         )
+            .then(res => console.log(res))
+            .catch(error => console.log(error))
     }
 
 }
@@ -103,7 +105,7 @@ async function getNotasSalida(filterNotaSalida, skip, limite, notasRecientes, se
         return series_notaSalida;
     }
 
-    const listaVenta = await Model.find(filter);
+    const listaVenta = await Model.find(filter).sort({ _id: -1 });
     return listaVenta;
 
 }

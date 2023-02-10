@@ -41,6 +41,7 @@ const mySchemeNotaSalida = new Schema({
     fecha_actualizacion: String,
     estado: Number,
     fecha_consultas: Date,
+    tipo: String,
 
 
 });

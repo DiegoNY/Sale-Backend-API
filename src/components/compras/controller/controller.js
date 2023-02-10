@@ -1,12 +1,5 @@
 const store = require('../database/store.js');
-const hoy = new Date();
-let fecha = hoy.toLocaleDateString("es-ES", {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-})
 
-let hora = hoy.toLocaleTimeString();
 
 
 function addListaCompra(listaCompraData) {
@@ -14,6 +7,10 @@ function addListaCompra(listaCompraData) {
     return new Promise((resolve, reject) => {
         try {
 
+            if (!listacompra.numero_documento) reject('Informacion requerida');
+
+            const hoy = new Date();
+            let hora = hoy.toLocaleTimeString();
 
             const listacompra = {
                 efectivo: listaCompraData.efectivo,
@@ -28,7 +25,7 @@ function addListaCompra(listaCompraData) {
                 total: listaCompraData.total,
                 vuelto: listaCompraData.vuelto,
                 estado: 1,
-                fecha_registro: fecha,
+                fecha_registro: `${hoy.toISOString()}`.substring(0, 10),
                 hora_registro: hora,
                 fecha_consultas: new Date(),
                 ruc_proveedor: listaCompraData.ruc_proveedor,
