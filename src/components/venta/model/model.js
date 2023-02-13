@@ -22,6 +22,12 @@ const mySchemeProductos = new Schema({
     medida: String
 })
 
+const mySchemeCuotas = new Schema({
+    id: Number,
+    fecha_pago: String,
+    monto: String,
+})
+
 const mySchemeVenta = new Schema({
     cliente: String,
     forma_pago: String,
@@ -48,6 +54,8 @@ const mySchemeVenta = new Schema({
     usuario: String,
     ip_maquina: String,
     fecha_consultas: Date,
+    cuotas: Number,
+    informacion_cuotas: [mySchemeCuotas]
 });
 
 

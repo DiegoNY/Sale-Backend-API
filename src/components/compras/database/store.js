@@ -56,7 +56,6 @@ function actualizarStockProductosComprados(productos = []) {
  */
 
 function addListaCompra(compra) {
-
     const myCompra = new Model(compra);
     myCompra.save()
         .then(listacompra => {

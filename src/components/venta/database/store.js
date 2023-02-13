@@ -2,6 +2,7 @@ const Model = require('../model/model.js');
 const { update } = require('../../productos/database/store.js');
 const { socket } = require('../../../socket.js');
 const { add } = require('../../series_ventas/controller/controller.js');
+const { addProductosVendidos } = require('../../productos_vendidos/controller/controller.js')
 const hoy = new Date();
 
 
@@ -82,6 +83,11 @@ function addVenta(venta) {
                         _id: listaventa.usuario
                     }
                 )
+
+                listaventa.productos.map(producto => {
+                    addProductosVendidos(producto)
+                })
+
                 resolve(listaventa);
             })
             .catch(e => {
@@ -117,8 +123,8 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         let fechasConsulta = JSON.parse(diarias);
         let fechaStart = new Date(fechasConsulta.desde);
         let fechaEnd = new Date(fechasConsulta.hasta);
-        console.log(fechaStart);
-        const daysOfWeek = ['','Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+        // console.log(fechaStart);
+        const daysOfWeek = ['', 'Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
 
 
         const listaVentasDiarias = await Model.aggregate([

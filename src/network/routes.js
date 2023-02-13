@@ -14,6 +14,7 @@ const venta = require('../components/venta/network');
 const serieVenta = require('../components/series_ventas/network');
 const notaSalida = require('../components/nota_salida/network');
 const gastos = require('../components/gastos/network');
+const productosVendidos = require('../components/productos_vendidos/network')
 
 const fecha = new Date()
 const { socket } = require('../socket');
@@ -35,7 +36,8 @@ const routes = function (server) {
     server.use('/api/v2/serie_ventas', serieVenta);
     server.use('/api/v2/nota_salida', notaSalida);
     server.use('/api/v2/gastos', gastos);
-    
+    server.use('/api/v2/productos_vendidos', productosVendidos)
+
     socket.io.on('connection', socket => {
 
         console.log('Socket conectado : ' + socket.id + fecha);

@@ -3,11 +3,10 @@ const store = require('../database/store.js');
 
 
 function addListaCompra(listaCompraData) {
-
     return new Promise((resolve, reject) => {
         try {
 
-            if (!listacompra.numero_documento) reject('Informacion requerida');
+            if (!listaCompraData.numero_documento) reject('Informacion requerida');
 
             const hoy = new Date();
             let hora = hoy.toLocaleTimeString();

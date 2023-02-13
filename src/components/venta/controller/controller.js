@@ -6,11 +6,6 @@ function addListaVenta(listaVentaData) {
     return new Promise((resolve, reject) => {
         try {
             const hoy = new Date();
-            let fecha = hoy.toLocaleDateString("es-ES", {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-            })
 
             let hora = hoy.toLocaleTimeString();
 
@@ -30,10 +25,12 @@ function addListaVenta(listaVentaData) {
                 total: listaVentaData.total,
                 vuelto: listaVentaData.vuelto,
                 estado: 1,
-                fecha_registro: fecha,
+                fecha_registro: `${hoy.toISOString()}`.substring(0, 10),
                 hora_registro: hora,
                 fecha_consultas: new Date(),
                 usuario: listaVentaData.usuario,
+                cuotas: listaVentaData.cuotas,
+                informacion_cuotas: listaVentaData.informacion_cuotas,
             }
 
             store.add(listaventa)
