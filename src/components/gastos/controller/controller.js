@@ -23,8 +23,10 @@ function addGasto(gastoData, file) {
 
             }
 
-            store.add(gasto);
-            resolve(gasto);
+            store.add(gasto)
+                .then(saveGasto => resolve(saveGasto))
+                .catch(Error => reject(Error));
+            // resolve(gasto);
         } catch (e) {
 
             reject('[Error al agregar gasto]' + e)

@@ -35,14 +35,14 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
             {
                 $group: {
                     _id: "$codigo_barras",
-                    count: {
+                    cantidad: {
                         $sum: 1
                     },
                     nombre: { $first: "$nombre" }
 
                 }
             },
-            { $sort: { count: -1 } },
+            { $sort: { cantidad: -1 } },
             { $limit: 5 }
         ]);
         return productos;
@@ -72,14 +72,13 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
             {
                 $group: {
                     _id: "$codigo_barras",
-                    count: {
+                    cantidad: {
                         $sum: 1
                     },
                     nombre: { $first: "$nombre" }
-
                 }
             },
-            { $sort: { count: -1 } },
+            { $sort: { cantidad: -1 } },
             { $limit: 5 }
         ]);
         return productos;
@@ -104,14 +103,14 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
             {
                 $group: {
                     _id: "$codigo_barras",
-                    count: {
+                    cantidad: {
                         $sum: 1
                     },
                     nombre: { $first: "$nombre" }
 
                 }
             },
-            { $sort: { count: -1 } },
+            { $sort: { cantidad: -1 } },
         ]);
         return productos;
     }
@@ -139,14 +138,14 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
             {
                 $group: {
                     _id: "$codigo_barras",
-                    count: {
+                    cantidad: {
                         $sum: 1
                     },
                     nombre: { $first: "$nombre" }
 
                 }
             },
-            { $sort: { count: -1 } },
+            { $sort: { cantidad: -1 } },
             { $limit: 5 }
         ]);
         return productos;

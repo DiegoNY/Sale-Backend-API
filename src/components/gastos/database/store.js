@@ -5,7 +5,12 @@ const hoy = new Date();
 function addGasto(gasto) {
 
     const myGasto = new Model(gasto);
-    myGasto.save();
+    
+    return new Promise((resolve, reject) => {
+        myGasto.save()
+            .then(gasto => resolve(gasto))
+            .catch(Error => reject(Error));
+    })
 }
 
 async function getGasto(filterGasto) {

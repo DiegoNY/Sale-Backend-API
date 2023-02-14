@@ -2,7 +2,8 @@ const Model = require('../model/model.js');
 const { update } = require('../../productos/database/store.js');
 const { socket } = require('../../../socket.js');
 const { add } = require('../../series_ventas/controller/controller.js');
-const { addProductosVendidos } = require('../../productos_vendidos/controller/controller.js')
+const { addProductosVendidos } = require('../../productos_vendidos/controller/controller.js');
+const Gastos = require('../../gastos/model/model.js')
 const hoy = new Date();
 
 
@@ -100,7 +101,7 @@ function addVenta(venta) {
 
 }
 
-async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usuario) {
+async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usuario, reporteVentas) {
 
     let filter = { estado: 1 }
 
@@ -180,11 +181,81 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         const comienzoDia = new Date(hoy.setHours(0, 0, 0, 0));
         const finDeDia = new Date(hoy.setHours(23, 59, 59, 999));
 
-        const listaVenta = await Model.find({
-            usuario: usuario, fecha_consultas: { $gt: comienzoDia, $lt: finDeDia }
-        });
+        const GastosRealizados = await Gastos.aggregate([
+            {
+                $match: {
+                    id_usuario: usuario,
+                    fecha_registro: {
+                        $gt: comienzoDia,
+                        $lt: finDeDia
+                    }
+                }
+            },
+            {
+                $project: { monto: 1, id_usuario: 1 }
+            },
+            {
+                $group: {
+                    _id: "$id_usuario",
+                    cantidad: { $sum: 1 },
+                    totalDineroGastos: { $sum: "$monto" }
+                }
+            }
+        ]);
 
-        return listaVenta
+        const CantidadRecaudada = await Model.aggregate([
+            {
+                $match: {
+                    usuario: usuario,
+                    fecha_consultas: {
+                        $gt: comienzoDia,
+                        $lt: finDeDia
+                    }
+                }
+            },
+            {
+                $project: { total: 1, usuario: 1 }
+            },
+            {
+                $group: {
+                    _id: "$usuario",
+                    dinero_recaudado: { $sum: "$total" },
+                    cantidad: { $sum: 1 },
+                }
+            }
+        ])
+
+        return [
+            {
+                cantidad: CantidadRecaudada[0].cantidad,
+                cantidad_recaudada: CantidadRecaudada[0].dinero_recaudado,
+                gastos: {
+                    cantidad: GastosRealizados[0].cantidad,
+                    total_dinero_gastos: GastosRealizados[0].totalDineroGastos
+                }
+            }
+        ]
+    }
+
+    if (!!reporteVentas) {
+        const reporte = await Model.aggregate([
+            {
+                $project: {
+                    subtotal: 1, total: 1, igv: 1, fecha_registro: 1
+                },
+            },
+            {
+                $group: {
+                    _id: "$fecha_registro",
+                    cantidad: { $sum: 1 },
+                    total: { $sum: "$total" },
+                    igv: { $sum: "$igv" },
+                    subtotal: { $sum: "$subtotal" }
+                }
+            }
+        ])
+
+        return reporte;
     }
 
     const listaVenta = await Model.find(filter).sort({ _id: -1 });

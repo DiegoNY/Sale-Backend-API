@@ -51,12 +51,12 @@ function addListaVenta(listaVentaData) {
 
 }
 
-function getListaVenta(filterventa, skip, limit, ventasRecientes, diarias, usuario) {
+function getListaVenta(filterventa, skip, limit, ventasRecientes, diarias, usuario, reporteVentas) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filterventa, skip, limit, ventasRecientes, diarias, usuario));
+            resolve(store.list(filterventa, skip, limit, ventasRecientes, diarias, usuario, reporteVentas));
         } catch (e) {
             rejec(`[Error al mostrar una VENTA ] ${e}`);
         }
