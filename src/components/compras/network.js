@@ -9,10 +9,9 @@ router.get('/', (req, res) => {
 
     const filterCompra = req.query.id || null;
     const recientes = req.query.recientes || false;
+    const reporte = req.query.reporte || false;
 
-    console.log(req.query);
-
-    controller.get(filterCompra, recientes)
+    controller.get(filterCompra, recientes, reporte)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })

@@ -16,7 +16,7 @@ function addProductosVendidos(productoVendidoData) {
                 fecha_vencimiento: productoVendidoData.fecha_vencimiento,
                 lote: productoVendidoData.lote,
                 fecha_registro: `${hoy.toISOString()}`.substring(0, 10),
-                fecha_consultas: new Date('2023-01-15'),
+                fecha_consultas: new Date(),
                 estado: 1,
             }
 

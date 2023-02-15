@@ -16,12 +16,14 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
         filter = { _id: filterProductoVendido }
     }
 
+    console.log(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+
     if (!!mesActual) {
         const productos = await Model.aggregate([
             {
                 $match: {
                     fecha_consultas: {
-                        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                        $gt: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
                     }
                 }
             },

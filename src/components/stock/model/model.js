@@ -4,7 +4,10 @@ const Schema = mongoose.Schema;
 
 
 const myScheme = new Schema({
-    id_producto: String,
+    id_producto: {
+        type: Schema.Types.ObjectId,
+        ref: 'Producto'
+    },
     fecha_registro: String,
     stock: Number,
     estado: Number,
@@ -12,6 +15,9 @@ const myScheme = new Schema({
     usuario: String,
     ip_maquina: String,
     fecha_consultas: Date,
+    lote: String,
+    fecha_vencimiento: String,
+    stock_inicial: Number,
 
 });
 

@@ -1,4 +1,5 @@
 const Model = require('../model/model.js');
+const Lotes = require('../../stock/model/model.js')
 const socket = require('../../../socket.js').socket;
 
 let hoy = new Date();
@@ -52,7 +53,68 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo) {
     }
 
     if (ventas) {
-        productos = await Model.find({ estatus: '1', stock: { $gt: 0 } });
+        // productos = await Model.find({ estatus: '1', stock: { $gt: 0 } });
+
+        productos = await Lotes.aggregate(
+            [
+                {
+                    $match: {
+                        estado: 1,
+                        stock: { $gt: 0 }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'productos',
+                        localField: 'id_producto',
+                        foreignField: '_id',
+                        as: 'informacionProducto'
+                    }
+                },
+                {
+                    $addFields: {
+                        codigo_barras: { $arrayElemAt: ["$informacionProducto.codigo_barras", 0] },
+                        precio_venta: { $arrayElemAt: ["$informacionProducto.precio_venta", 0] },
+                        fecha_vencimiento: { $arrayElemAt: ["$informacionProducto.fecha_vencimiento", 0] },
+                        precio_venta_caja: { $arrayElemAt: ["$informacionProducto.precio_venta_caja", 0] },
+                        precio_venta_tableta: { $arrayElemAt: ["$informacionProducto.precio_venta_tableta", 0] },
+                        stock_caja: { $arrayElemAt: ["$informacionProducto.stock_caja", 0] },
+                        stock_tableta: { $arrayElemAt: ["$informacionProducto.stock_tableta", 0] },
+                        stock_minimo: { $arrayElemAt: ["$informacionProducto.stock_minimo", 0] },
+                        tipo: { $arrayElemAt: ["$informacionProducto.tipo", 0] },
+                        venta_sujeta: { $arrayElemAt: ["$informacionProducto.venta_sujeta", 0] },
+                        fecha_registro: { $arrayElemAt: ["$informacionProducto.fecha_registro", 0] },
+                        estatus: { $arrayElemAt: ["$informacionProducto.estatus", 0] },
+                        descripcion: { $arrayElemAt: ["$informacionProducto.descripcion", 0] },
+                        estado: { $arrayElemAt: ["$informacionProducto.estado", 0] },
+                        id_producto: { $arrayElemAt: ["$informacionProducto._id", 0] },
+                        id_lote: "$_id"
+                    }
+                },
+                {
+                    $project: {
+                        id_lote: 1,
+                        _id: "$id_producto",
+                        stock: 1,
+                        lote: 1,
+                        fecha_vencimiento: 1,
+                        codigo_barras: 1,
+                        descripcion: 1,
+                        precio_venta: 1,
+                        precio_venta_caja: 1,
+                        precio_venta_tableta: 1,
+                        stock_caja: 1,
+                        stock_tableta: 1,
+                        stock_minimo: 1,
+                        tipo: 1,
+                        venta_sujeta: 1,
+                        fecha_registro: 1,
+                        estatus: 1,
+                        estado: 1,
+                    }
+                }
+            ]
+        )
     }
 
     if (recientes) {

@@ -2,10 +2,21 @@ const Model = require('../model/model.js')
 const hoy = new Date();
 
 
-function addStock(stock) {
+async function addStock(stock) {
+    const foundLote = await Model.findOne({
+        lote: stock.lote,
+        id_producto: stock.id_producto
+    })
 
-    const myStock = new Model(stock);
-    myStock.save();
+    if (!foundLote) {
+        const myStock = new Model(stock);
+        myStock.save();
+        return;
+    }
+
+    updateStock(stock.lote, stock)
+    return;
+
 }
 
 async function getStock(filterStock) {
@@ -21,14 +32,22 @@ async function getStock(filterStock) {
 
 }
 
-async function updateStock(id, body) {
+async function updateStock(id, body, venta = false) {
     const foundStock = await Model.findOne({
-        _id: id
+        lote: id,
+        id_producto: body.id_producto
     })
+    console.log("desde stocks store")
+    console.log(body);
+    console.log(foundStock);
+    console.log(id);
+    if (!venta) {
+        foundStock.stock = Number(foundStock.stock) + Number(body.stock);
+    }
 
-
-    foundStock.stock = body.stock;
-    foundStock.fecha_actualizacion = hoy;
+    if (!!venta) {
+        foundStock.stock = Number(foundStock.stock) - Number(body.stock);
+    }
 
     const newStock = await foundStock.save();
     return newStock;
@@ -52,4 +71,5 @@ module.exports = {
     list: getStock,
     update: updateStock,
     deleted: deletedStock,
+    updateStock
 }

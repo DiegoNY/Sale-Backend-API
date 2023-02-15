@@ -3,7 +3,8 @@ const { update } = require('../../productos/database/store.js');
 const { socket } = require('../../../socket.js');
 const { add } = require('../../series_ventas/controller/controller.js');
 const { addProductosVendidos } = require('../../productos_vendidos/controller/controller.js');
-const Gastos = require('../../gastos/model/model.js')
+const Gastos = require('../../gastos/model/model.js');
+const { updateStock } = require('../../stock/database/store.js');
 const hoy = new Date();
 
 
@@ -14,6 +15,7 @@ function sumarStockProductosComprados(productos = []) {
             acumulador[objeto._id] = {
                 _id: objeto._id,
                 stock_vendido: Number(objeto.stock_vendido),
+                id_lote: objeto.id_lote,
                 fecha_vencimiento: objeto.fecha_vencimiento,
                 lote: objeto.lote,
             };
@@ -39,12 +41,28 @@ function actualizarStockProductosVendidos(productos = []) {
             {
                 stock: producto[key].stock_vendido,
             },
-            true,
+            true
         )
             .then(producto => console.log(producto))
             .catch(error => console.log(error));
     }
 
+}
+
+function actualizarStockLotes(productos = []) {
+    const producto = sumarStockProductosComprados(productos);
+    for (let key in producto) {
+        updateStock(
+            producto[key].lote,
+            {
+                stock: producto[key].stock_vendido,
+                id_producto: producto[key]._id,
+            },
+            true
+        )
+            .then(stock => console.log(stock))
+            .catch(error => console.log(error));
+    }
 }
 
 /**
@@ -62,6 +80,7 @@ function addVenta(venta) {
         myVenta.save()
             .then(listaventa => {
                 actualizarStockProductosVendidos(venta.productos);
+                actualizarStockLotes(venta.productos);
 
                 add({ serie: listaventa.serie, numero: listaventa.numero_venta });
 
@@ -101,7 +120,7 @@ function addVenta(venta) {
 
 }
 
-async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usuario, reporteVentas) {
+async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usuario, reporteVentas, reporte) {
 
     let filter = { estado: 1 }
 
@@ -227,11 +246,11 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
 
         return [
             {
-                cantidad: CantidadRecaudada[0].cantidad,
-                cantidad_recaudada: CantidadRecaudada[0].dinero_recaudado,
+                cantidad: CantidadRecaudada[0]?.cantidad,
+                cantidad_recaudada: CantidadRecaudada[0]?.dinero_recaudado,
                 gastos: {
-                    cantidad: GastosRealizados[0].cantidad,
-                    total_dinero_gastos: GastosRealizados[0].totalDineroGastos
+                    cantidad: GastosRealizados[0]?.cantidad,
+                    total_dinero_gastos: GastosRealizados[0]?.totalDineroGastos
                 }
             }
         ]
@@ -256,6 +275,28 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         ])
 
         return reporte;
+    }
+
+    if (!!reporte) {
+        let fechasConsulta = JSON.parse(reporte);
+        let fechaStart = new Date(fechasConsulta.desde);
+        let fechaEnd = new Date(fechasConsulta.hasta);
+        const reportes = await Model.aggregate([
+            {
+                $match: {
+                    fecha_consultas: {
+                        $gte: fechaStart,
+                        $lte: fechaEnd
+                    }
+                }
+            },
+            {
+                $project: { numero_documento: "$numero_venta", subtotal: 1, igv: 1, total: 1, fecha_registro: 1, _id: 1 }
+            },
+
+        ]).sort({ _id: -1 })
+
+        return reportes;
     }
 
     const listaVenta = await Model.find(filter).sort({ _id: -1 });

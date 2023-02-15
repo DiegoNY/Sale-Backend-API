@@ -43,12 +43,12 @@ function addListaCompra(listaCompraData) {
 
 }
 
-function getListaCompra(filtercompra, recientes) {
+function getListaCompra(filtercompra, recientes, reporte) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filtercompra, recientes));
+            resolve(store.list(filtercompra, recientes, reporte));
         } catch (e) {
             rejec(`[Error al mostrar lista compra] ${e}`);
         }

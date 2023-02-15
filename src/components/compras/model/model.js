@@ -47,6 +47,7 @@ const mySchemeListaCompra = new Schema({
     usuario: String,
     ip_maquina: String,
     ruc_proveedor: String,
+    fecha_consultas: Date,
 });
 
 const Model = mongoose.model('listacompra', mySchemeListaCompra);

@@ -14,8 +14,8 @@ function addProducto(productoData, file) {
             return reject('El codigo barras es requerido')
         }
 
-        console.log(file)
-        console.log("Si tiene file")
+        // console.log(file)
+        // console.log("Si tiene file")
         let fileUrl = '';
         if (file) {
             //cambiar url por la carpeta en la que se sirven los estaticos 

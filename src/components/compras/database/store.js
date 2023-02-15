@@ -1,5 +1,6 @@
 const Model = require('../model/model.js');
-const { update } = require('../../productos/database/store.js')
+const { update } = require('../../productos/database/store.js');
+const { addStock } = require('../../stock/controller/controller.js');
 const hoy = new Date();
 
 
@@ -10,6 +11,7 @@ function sumarStockProductosComprados(productos = []) {
             acumulador[objeto._id] = {
                 _id: objeto._id,
                 stock_comprado: Number(objeto.stock_comprado),
+                stock_inicial: Number(objeto.stock_inicial),
                 fecha_vencimiento: objeto.fecha_vencimiento,
                 precio_venta_caja: objeto.precio_venta_caja,
                 precio_venta_tableta: objeto.precio_venta_tableta,
@@ -36,8 +38,8 @@ function actualizarStockProductosComprados(productos = []) {
             producto[key]._id,
             {
                 stock: producto[key].stock_comprado,
-                fecha_vencimiento: producto[key].fecha_vencimiento,
-                lote: producto[key].lote,
+                fecha_vencimiento: '',
+                lote: '',
                 precio_venta_caja: producto[key].precio_venta_caja,
                 precio_venta_tableta: producto[key].precio_venta_tableta,
                 precio_venta: producto[key].precio_venta,
@@ -46,6 +48,20 @@ function actualizarStockProductosComprados(productos = []) {
         )
     }
 
+}
+function ingresarStockLotes(productosData = []) {
+    const productos = sumarStockProductosComprados(productosData);
+    for (let key in productos) {
+        addStock(
+            {
+                stock: productos[key].stock_comprado,
+                stock_inicial: productos[key].stock_inicial,
+                fecha_vencimiento: productos[key].fecha_vencimiento,
+                lote: productos[key].lote,
+                id_producto: productos[key]._id,
+            }
+        )
+    }
 }
 
 /**
@@ -61,12 +77,13 @@ function addListaCompra(compra) {
         .then(listacompra => {
             // console.log(compra.productos);
             actualizarStockProductosComprados(compra.productos);
+            ingresarStockLotes(compra.productos);
         })
         .catch(e => console.log('[Error al ingresar lista compra]' + e));
 
 }
 
-async function getListaCompra(filterCompra, recientes) {
+async function getListaCompra(filterCompra, recientes, reporte) {
 
 
     let filter = { estado: 1 }
@@ -80,8 +97,25 @@ async function getListaCompra(filterCompra, recientes) {
         listacompra = await Model.find().sort({ _id: -1 }).limit(recientes).exec();
     }
 
-    if (!recientes) {
+    if (!recientes && !reporte) {
         listacompra = await Model.find(filter).sort({ _id: -1 });
+    }
+
+    if (!!reporte) {
+        let fechasConsulta = JSON.parse(reporte);
+        let fechaStart = new Date(fechasConsulta.desde);
+        let fechaEnd = new Date(fechasConsulta.hasta);
+
+        listacompra = await Model.find(
+            {
+                fecha_consultas: {
+                    $gte: fechaStart,
+                    $lte: fechaEnd,
+                },
+                estado: 1,
+            }
+        ).sort({ _id: -1 })
+
     }
 
     return listacompra;

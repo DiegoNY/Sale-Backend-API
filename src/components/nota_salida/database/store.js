@@ -2,6 +2,7 @@ const Model = require('../model/model.js');
 const { update } = require('../../productos/database/store.js');
 const { socket } = require('../../../socket.js');
 const { add, get } = require('../../series_ventas/controller/controller.js');
+const { updateStock } = require('../../stock/database/store.js');
 const hoy = new Date();
 
 
@@ -45,6 +46,22 @@ function actualizarStockProductosSalientes(productos = []) {
 
 }
 
+function actualizarStockLotes(productos = []) {
+    const producto = sumarStockProductosSalientes(productos);
+    for (let key in producto) {
+        updateStock(
+            producto[key].lote,
+            {
+                stock: producto[key].stock_saliente,
+                id_producto: producto[key]._id,
+            },
+            true
+        )
+            .then(stock => console.log(stock))
+            .catch(error => console.log(error));
+    }
+    return producto;
+}
 
 
 function addNotaSalida(nota) {
@@ -55,6 +72,7 @@ function addNotaSalida(nota) {
         myNotaSalida.save()
             .then(listaNotaSalida => {
                 actualizarStockProductosSalientes(nota.productos);
+                const productos = actualizarStockLotes(nota.productos);
 
                 add({ serie: listaNotaSalida.serie, numero: listaNotaSalida.numeroDocumento });
 
@@ -64,7 +82,7 @@ function addNotaSalida(nota) {
                         mensaje: 'Serie en uso',
                         numeroNotaSalida: listaNotaSalida.numeroDocumento,
                         serie: listaNotaSalida.serie,
-                        productos: listaNotaSalida.productos
+                        productos: productos,
                     }
                 )
 

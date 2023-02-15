@@ -11,8 +11,11 @@ function addStock(stockData) {
     return new Promise((resolve, reject) => {
         try {
 
-            const proveedor = {
+            const lote = {
                 stock: stockData.stock,
+                stock_inicial: stockData.stock_inicial,
+                fecha_vencimiento: stockData.fecha_vencimiento,
+                lote: stockData.lote,
                 fecha_registro: fecha,
                 estado: 1,
                 id_producto: stockData.id_producto,
@@ -20,11 +23,11 @@ function addStock(stockData) {
 
             }
 
-            store.add(proveedor);
-            resolve(proveedor);
+            store.add(lote);
+            resolve(lote);
         } catch (e) {
 
-            reject('[Error al agregar usuario]' + e)
+            reject('[Error al agregar stock ]' + e)
 
         }
 
@@ -72,4 +75,6 @@ module.exports = {
     get: getStock,
     update: updateStock,
     delete: deleteStock,
+    addStock,
+    updateStock,
 };
