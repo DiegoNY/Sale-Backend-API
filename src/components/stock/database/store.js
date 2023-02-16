@@ -1,6 +1,4 @@
 const Model = require('../model/model.js')
-const hoy = new Date();
-
 
 async function addStock(stock) {
     const foundLote = await Model.findOne({
@@ -37,12 +35,12 @@ async function updateStock(id, body, venta = false) {
         lote: id,
         id_producto: body.id_producto
     })
-    console.log("desde stocks store")
-    console.log(body);
-    console.log(foundStock);
-    console.log(id);
+
     if (!venta) {
         foundStock.stock = Number(foundStock.stock) + Number(body.stock);
+        foundStock.fecha_vencimiento = body.fecha_vencimiento || foundStock.fecha_vencimiento;
+        foundStock.fecha_vencimiento_consultas = new Date(body.fecha_vencimiento) || foundStock.fecha_vencimiento_consultas;
+        foundStock.fecha_actualizacion = `${new Date()}`;
     }
 
     if (!!venta) {

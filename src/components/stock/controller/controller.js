@@ -19,7 +19,8 @@ function addStock(stockData) {
                 fecha_registro: fecha,
                 estado: 1,
                 id_producto: stockData.id_producto,
-                fecha_consultas: new Date()
+                fecha_consultas: new Date(),
+                fecha_vencimiento_consultas: new Date(stockData.fecha_vencimiento),
 
             }
 
@@ -43,7 +44,7 @@ function getStock(filterStock) {
 
             resolve(store.list(filterStock));
         } catch (e) {
-            rejec(`[Error al mostrar usuarios] ${e}`);
+            rejec(`[Error al mostrar stock] ${e}`);
         }
     })
 }

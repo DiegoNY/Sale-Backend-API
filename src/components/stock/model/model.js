@@ -17,6 +17,7 @@ const myScheme = new Schema({
     fecha_consultas: Date,
     lote: String,
     fecha_vencimiento: String,
+    fecha_vencimiento_consultas: Date,
     stock_inicial: Number,
 
 });

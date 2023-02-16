@@ -134,7 +134,7 @@ async function updateListaCompra(id, body) {
         const foundProducto = await foundListaCompra.productos.id(producto._id);
 
         if (foundProducto) {
-            console.log('Encontrado');
+            // console.log('Encontrado');
             // console.log(foundProducto._id);
             foundProducto.descripcion = producto.descripcion;
         }

@@ -88,6 +88,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo) {
                         descripcion: { $arrayElemAt: ["$informacionProducto.descripcion", 0] },
                         estado: { $arrayElemAt: ["$informacionProducto.estado", 0] },
                         id_producto: { $arrayElemAt: ["$informacionProducto._id", 0] },
+                        id_laboratorio: { $arrayElemAt: ["$informacionProducto.id_laboratorio", 0] },
                         id_lote: "$_id"
                     }
                 },
@@ -111,6 +112,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo) {
                         fecha_registro: 1,
                         estatus: 1,
                         estado: 1,
+                        id_laboratorio: 1,
                     }
                 }
             ]
@@ -122,7 +124,6 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo) {
     }
 
     if (stockBajo) {
-        console.log(stockBajo);
         productos = await Model.find({ stock: { $gt: 0 } }).sort({ stock: 1 }).limit(stockBajo).exec();
     }
 

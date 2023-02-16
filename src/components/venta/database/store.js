@@ -120,7 +120,7 @@ function addVenta(venta) {
 
 }
 
-async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usuario, reporteVentas, reporte) {
+async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usuario, reporteVentas, reporte, ventasMensuales) {
 
     let filter = { estado: 1 }
 
@@ -297,6 +297,61 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         ]).sort({ _id: -1 })
 
         return reportes;
+    }
+
+    if (!!ventasMensuales) {
+        let fechasConsulta = JSON.parse(ventasMensuales);
+        let fechaStart = new Date(fechasConsulta.desde);
+        let fechaEnd = new Date(fechasConsulta.hasta);
+        const reporte = await Model.aggregate([
+            {
+                $match: {
+                    fecha_consultas: {
+                        $gte: fechaStart,
+                        $lte: fechaEnd
+                    }
+                }
+            },
+            {
+                $project: {
+                    subtotal: 1,
+                    igv: 1,
+                    total: 1,
+                    month: { $month: "$fecha_consultas" },
+                    monthName: {
+                        $arrayElemAt: [
+                            [
+                                "",
+                                "Enero",
+                                "Febrero",
+                                "Marzo",
+                                "Abril",
+                                "Mayo",
+                                "Junio",
+                                "Julio",
+                                "Agosto",
+                                "Septiembre",
+                                "Octubre",
+                                "Noviembre",
+                                "Diciembre"
+                            ],
+                            { $month: "$fecha_consultas" }
+                        ]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: "$month",
+                    mes: { $first: "$monthName" },
+                    igv: { $sum: "$igv" },
+                    subtotal: { $sum: "$total" },
+                    total: { $sum: { $add: ["$igv", "$total"] } }
+                }
+            }
+        ])
+
+        return reporte;
     }
 
     const listaVenta = await Model.find(filter).sort({ _id: -1 });
