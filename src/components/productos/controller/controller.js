@@ -55,10 +55,10 @@ function addProducto(productoData, file) {
 
 }
 
-function getProducto(filterCodigoBarra, recientes, ventas, stockBajo) {
+function getProducto(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte) {
 
     return new Promise((resolve, rejec) => {
-        resolve(store.list(filterCodigoBarra, recientes, ventas, stockBajo));
+        resolve(store.list(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte));
     })
 }
 

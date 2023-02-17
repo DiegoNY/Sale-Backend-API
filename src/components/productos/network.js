@@ -12,8 +12,9 @@ router.get('/', (req, res) => {
     const recientes = req.query.recientes || false;
     const ventas = req.query.ventas || false;
     const stockBajo = req.query.stockBajo || false;
+    const stockReporte = req.query.stockReporte || false;
 
-    controller.get(filterProducto, recientes, ventas, stockBajo)
+    controller.get(filterProducto, recientes, ventas, stockBajo, stockReporte)
         .then((productos) => {
             response.successDataApiV1(req, res, productos, 200)
         })

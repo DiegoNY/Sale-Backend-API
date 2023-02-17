@@ -38,7 +38,7 @@ function addProducto(producto) {
 
 }
 
-async function getProducto(filterProducto, recientes, ventas, stockBajo) {
+async function getProducto(filterProducto, recientes, ventas, stockBajo, stockReporte) {
 
 
     let filter = { estatus: '1' }
@@ -48,7 +48,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo) {
         filter = { _id: filterProducto }
     }
 
-    if (!recientes && !ventas) {
+    if (!recientes && !ventas && !stockReporte) {
         productos = await Model.find(filter);
     }
 
@@ -127,6 +127,126 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo) {
         productos = await Model.find({ stock: { $gt: 0 } }).sort({ stock: 1 }).limit(stockBajo).exec();
     }
 
+    if (stockReporte) {
+
+
+        productos = await Model.aggregate(
+            [
+                {
+                    $lookup: {
+                        from: 'stocks',
+                        localField: '_id',
+                        foreignField: 'id_producto',
+                        pipeline: [
+                            {
+                                $project: { stock: 1, id_producto: 1 }
+                            },
+                            {
+                                $group: {
+                                    _id: "$id_producto",
+                                    cantidad: { $sum: "$stock" },
+                                }
+                            }
+                        ],
+                        as: 'Lotes'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'ventas',
+                        localField: '_id',
+                        let: { id: "$_id" },
+                        foreignField: 'productos._id',
+                        pipeline: [
+                            {
+                                $unwind: "$productos"
+                            },
+                            {
+                                $match: {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: [
+                                                    "$productos._id", ["$$id"]
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                $group: {
+                                    _id: "$productos._id", // Agrupar por el ID de la venta para volver a construir el arreglo de productos
+                                    fecha: { $first: "$fecha_registro" },
+                                    cantidad: { $sum: "$productos.stock_vendido" },
+                                    // productos: { $push: "$productos" } // Volver a construir el arreglo de productos solo con los productos que tienen el código de barras especificado
+                                }
+                            },
+                        ],
+                        as: 'Ventas'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'nota_salidas',
+                        localField: 'codigo_barras',
+                        let: { codigo: "$codigo_barras" },
+                        foreignField: 'productos.codigo_barras',
+                        pipeline: [
+                            {
+                                $unwind: "$productos" //Se destructura el array para poder recorrerlo uno por uno
+                            },
+                            {
+                                $match: {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: [
+                                                    "$productos.codigo_barras", ["$$codigo"] //Mostrando solo los productos con el mismo codigo
+                                                ]
+                                            }
+                                        }
+                                    ]
+
+                                },
+
+                            },
+                            {
+                                $group: {
+                                    _id: "$productos.codigo_barras", // Agrupar por el ID de la venta para volver a construir el arreglo de productos
+                                    fecha: { $first: "$fecha_registro" },
+                                    cantidad: { $sum: "$productos.stock_saliente" },
+                                    // productos: { $push: "$productos" } // Volver a construir el arreglo de productos solo con los productos que tienen el código de barras especificado
+                                }
+                            },
+
+                        ],
+                        as: 'Salidas',
+                    },
+                },
+                {
+                    $project: {
+                        Salida: { $first: "$Salidas.cantidad" },
+                        Ventas: { $first: "$Ventas.cantidad" },
+                        stock: 1,
+                        descripcion: 1,
+                        stock_inicial: 1,
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$_id",
+                        descripcion: { $first: "$descripcion" },
+                        salidas: { $first: "$Salida" },
+                        ventas: { $first: "$Ventas" },
+                        stock: { $first: "$stock" },
+                        stock_inicial: { $first: { $sum: ["$Salida", "$Ventas", "$stock"] } }
+                    }
+                }
+
+            ]
+        )
+    }
     return productos;
 
 }
