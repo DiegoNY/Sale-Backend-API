@@ -21,6 +21,7 @@ const mySchemeProductos = new Schema({
     stock_comprado: Number,
     total: Number,
     fecha_consultas: Date,
+    medida: String,
 
 })
 
@@ -45,6 +46,7 @@ const mySchemeListaCompra = new Schema({
     fecha_actualizacion: String,
     hora_registro: String,
     usuario: String,
+    nombre_usuario: String,
     ip_maquina: String,
     ruc_proveedor: String,
     fecha_consultas: Date,

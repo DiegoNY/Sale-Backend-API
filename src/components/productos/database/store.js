@@ -229,15 +229,21 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         Salida: { $first: "$Salidas.cantidad" },
                         Ventas: { $first: "$Ventas.cantidad" },
                         stock: 1,
+                        id_laboratorio: 1,
                         descripcion: 1,
                         stock_inicial: 1,
+                        codigo_barras: 1,
+                        estado: 1
                     }
                 },
                 {
                     $group: {
                         _id: "$_id",
                         descripcion: { $first: "$descripcion" },
-                        salidas: { $first: "$Salida" },
+                        laboratorio: { $first: "$id_laboratorio" },
+                        codigo: { $first: "$codigo_barras" },
+                        estado: { $first: "$estado" },
+                        salidas: { $first: "$stock_inicial" },
                         ventas: { $first: "$Ventas" },
                         stock: { $first: "$stock" },
                         stock_inicial: { $first: { $sum: ["$Salida", "$Ventas", "$stock"] } }

@@ -52,6 +52,7 @@ const mySchemeVenta = new Schema({
     serie: String,
     correlativo: String,
     usuario: String,
+    nombre_usuario: String,
     ip_maquina: String,
     fecha_consultas: Date,
     cuotas: Number,

@@ -37,12 +37,12 @@ function addStock(stockData) {
 
 }
 
-function getStock(filterStock) {
+function getStock(filterStock, productosVencidos) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filterStock));
+            resolve(store.list(filterStock, productosVencidos));
         } catch (e) {
             rejec(`[Error al mostrar stock] ${e}`);
         }

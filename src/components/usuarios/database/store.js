@@ -60,7 +60,7 @@ async function deletedUsuario(id) {
 async function velidationUsuario(body) {
 
     const foundUsuario = await Model.findOne({
-        email: body.usuario,
+        usuario: body.usuario,
         clave: body.contraseña
     })
 

@@ -159,11 +159,9 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
 }
 
 async function updateProductoVendido(id, body) {
-    console.log(body);
     const foundProductoVendido = await Model.findOne({
         _id: id
     })
-
 
     //codigo para la actualizacion el body igual al modelo 
 

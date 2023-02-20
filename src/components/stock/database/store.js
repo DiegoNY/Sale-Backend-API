@@ -17,12 +17,60 @@ async function addStock(stock) {
 
 }
 
-async function getStock(filterStock) {
+async function getStock(filterStock, productosVencidos) {
 
 
     let filter = { estado: 1 }
     if (filterStock !== null) {
         filter = { _id: filterStock }
+    }
+
+    if (productosVencidos) {
+        let fechasConsulta = JSON.parse(productosVencidos);
+        let fechaStart = new Date(fechasConsulta.desde);
+        let fechaEnd = new Date(fechasConsulta.hasta);
+
+
+        const stocks = await Model.aggregate([
+            {
+                $match: {
+                    fecha_vencimiento_consultas: {
+                        $gte: fechaStart,
+                        $lte: fechaEnd
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'productos',
+                    localField: "id_producto",
+                    foreignField: "_id",
+                    pipeline: [
+                        {
+                            $project: {
+                                descripcion: 1,
+                                id_laboratorio: 1,
+                                codigo_barras: 1,
+                            }
+                        }
+                    ],
+                    as: 'Producto'
+                }
+            },
+            {
+                $project: {
+                    fecha_vencimiento: "$fecha_vencimiento",
+                    lote: "$lote",
+                    stock: "$stock",
+                    descripcion: { $arrayElemAt: ["$Producto.descripcion", 0] },
+                    laboratorio: { $arrayElemAt: ["$Producto.id_laboratorio", 0] },
+                    codigo_barras: { $arrayElemAt: ["$Producto.codigo_barras", 0] }
+                }
+            }
+        ])
+
+        return stocks;
+
     }
 
     const stock = await Model.find(filter);

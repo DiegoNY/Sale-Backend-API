@@ -31,6 +31,7 @@ function addListaVenta(listaVentaData) {
                 usuario: listaVentaData.usuario,
                 cuotas: listaVentaData.cuotas,
                 informacion_cuotas: listaVentaData.informacion_cuotas,
+                nombre_usuario: listaVentaData.nombre_usuario,
             }
 
             store.add(listaventa)

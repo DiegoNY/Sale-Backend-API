@@ -7,10 +7,9 @@ const router = express.Router();
 router.get('/', (req, res) => {
 
 
-    const filterStock = req.query.id || null;
-    const productosVencidos = req.query.productos_vencidos || false;
+    const filterNotaCredito = req.query.id || null;
 
-    controller.get(filterStock, productosVencidos)
+    controller.get(filterNotaCredito)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })
