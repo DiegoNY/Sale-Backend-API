@@ -22,6 +22,7 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
         const productos = await Model.aggregate([
             {
                 $match: {
+                    estado: 1,
                     fecha_consultas: {
                         $gt: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
                     }
@@ -58,6 +59,7 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
         const productos = await Model.aggregate([
             {
                 $match: {
+                    estado: 1,
                     fecha_consultas: {
                         $gte: inicioMesPasado,
                         $lte: inicioDeEsteMes,
@@ -90,6 +92,7 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
         const productos = await Model.aggregate([
             {
                 $match: {
+                    estado: 1,
                     fecha_consultas: {
                         $gte: new Date(new Date().getFullYear(), new Date().getMonth() - 12, 0),
                     }
@@ -124,6 +127,7 @@ async function getProductosVendidos(filterProductoVendido, mesActual, mesPasado,
         const productos = await Model.aggregate([
             {
                 $match: {
+                    estado: 1,
                     fecha_consultas: {
                         $gte: inicioHaceTresMeses,
                         $lte: finDeEsteMes,
@@ -164,7 +168,7 @@ async function updateProductoVendido(id, body) {
     })
 
     //codigo para la actualizacion el body igual al modelo 
-
+    
     const newProductoVendido = await foundProductoVendido.save();
     return newProductoVendido;
 

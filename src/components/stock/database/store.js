@@ -78,13 +78,13 @@ async function getStock(filterStock, productosVencidos) {
 
 }
 
-async function updateStock(id, body, venta = false) {
+async function updateStock(id, body, venta = false, nota_credito = false) {
     const foundStock = await Model.findOne({
         lote: id,
         id_producto: body.id_producto
     })
 
-    if (!venta) {
+    if (!venta && !nota_credito) {
         foundStock.stock = Number(foundStock.stock) + Number(body.stock);
         foundStock.fecha_vencimiento = body.fecha_vencimiento || foundStock.fecha_vencimiento;
         foundStock.fecha_vencimiento_consultas = new Date(body.fecha_vencimiento) || foundStock.fecha_vencimiento_consultas;
@@ -93,6 +93,10 @@ async function updateStock(id, body, venta = false) {
 
     if (!!venta) {
         foundStock.stock = Number(foundStock.stock) - Number(body.stock);
+    }
+
+    if (!!nota_credito) {
+        foundStock.stock = Number(foundStock.stock) + Number(body.stock);
     }
 
     const newStock = await foundStock.save();

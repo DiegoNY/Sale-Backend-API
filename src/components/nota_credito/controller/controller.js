@@ -3,16 +3,18 @@ const store = require('../database/store.js');
 function addNotaCredito(body) {
     return new Promise((resolve, reject) => {
 
-        
+
         const notaCredito = {
-            numero: body.numero,
+            numero: `NC${body.fecha_registro}${body.hora_registro}`.split('-').join(''),
+            id_venta: body._id,
             fecha: body.fecha,
             numero_documento: body.numero_documento,
             fecha_documento: body.fecha_documento,
             motivo: body.motivo,
             descripcion: body.descripcion,
             productos: body.productos,
-            fecha_consultas: new Date()
+            fecha_consultas: new Date(),
+            codigo_anulacion: body.codigo_anulacion,
         }
 
         store.add(notaCredito);

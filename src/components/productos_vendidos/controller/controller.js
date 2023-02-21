@@ -1,6 +1,6 @@
 const store = require('../database/store.js');
 
-function addProductosVendidos(productoVendidoData) {
+function addProductosVendidos(productoVendidoData, id_venta) {
 
     return new Promise((resolve, reject) => {
         try {
@@ -8,6 +8,7 @@ function addProductosVendidos(productoVendidoData) {
 
             const productoVendido = {
                 id: productoVendidoData._id,
+                id_venta: id_venta,
                 codigo_barras: productoVendidoData.codigo_barras,
                 nombre: productoVendidoData.descripcion,
                 stock_vendido: productoVendidoData.stock_vendido,

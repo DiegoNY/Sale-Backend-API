@@ -6,7 +6,8 @@ const Schema = mongoose.Schema;
 const myScheme = new Schema({
     fecha: String,
     dni: String,
-    dinero_apertura: Number,
+    tipo: String,
+    dinero: Number,
     punto_venta: String,
     dni: Number,
     usuario: String,

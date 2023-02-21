@@ -6,24 +6,25 @@ let fecha = hoy.toLocaleDateString("es-ES", {
     year: 'numeric',
 })
 
-function addApertura(aperturaData) {
+function addInformacionCaja(cajaData) {
 
     return new Promise((resolve, reject) => {
         try {
             //tipo de identificacion 01 o 06  uno para DNI 06 para RUC 
 
-            const apertura = {
+            const caja = {
+                tipo: cajaData.tipo,
                 fecha: fecha,
-                dni: aperturaData.dni,
+                dni: cajaData.dni,
                 estado: 1,
-                dinero_apertura: aperturaData.dinero_apertura,
-                punto_venta: aperturaData.punto_venta,
-                usuario: aperturaData.usuario,
+                dinero: cajaData.dinero,
+                punto_venta: cajaData.punto_venta,
+                usuario: cajaData.usuario,
                 fecha_consultas: new Date()
             }
 
-            store.add(apertura);
-            resolve(apertura);
+            store.add(caja);
+            resolve(caja);
         } catch (e) {
 
             reject('[Error al registrar APERTURA]' + e)
@@ -80,7 +81,7 @@ function deleteApertura(id) {
 }
 
 module.exports = {
-    add: addApertura,
+    add: addInformacionCaja,
     get: getApertura,
     update: updateApertura,
     delete: deleteApertura,

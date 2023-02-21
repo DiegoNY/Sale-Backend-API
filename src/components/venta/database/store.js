@@ -105,7 +105,7 @@ function addVenta(venta) {
                 )
 
                 listaventa.productos.map(producto => {
-                    addProductosVendidos(producto)
+                    addProductosVendidos(producto, listaventa._id)
                 })
 
                 resolve(listaventa);
@@ -129,13 +129,13 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
     }
 
     if (skip && limite) {
-        const listaVentasPaginadas = await Model.find().skip(skip).limit(limite).exec();
+        const listaVentasPaginadas = await Model.find({ estado: 1 }).skip(skip).limit(limite).exec();
         return listaVentasPaginadas;
     }
 
     if (ventasRecientes) {
 
-        const listaVentas = await Model.find().sort({ _id: -1 }).limit(ventasRecientes).exec();
+        const listaVentas = await Model.find({ estado: 1 }).sort({ _id: -1 }).limit(ventasRecientes).exec();
         return listaVentas;
     }
 
@@ -150,6 +150,7 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         const listaVentasDiarias = await Model.aggregate([
             {
                 $match: {
+                    estado: 1,
                     fecha_consultas: {
                         $gte: fechaStart,
                         $lte: fechaEnd
@@ -229,7 +230,8 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
                     fecha_consultas: {
                         $gt: comienzoDia,
                         $lt: finDeDia
-                    }
+                    },
+                    estado: 1,
                 }
             },
             {
@@ -259,6 +261,11 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
     if (!!reporteVentas) {
         const reporte = await Model.aggregate([
             {
+                $match: {
+                    estado: 1,
+                }
+            },
+            {
                 $project: {
                     subtotal: 1, total: 1, igv: 1, fecha_registro: 1
                 },
@@ -284,6 +291,7 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         const reportes = await Model.aggregate([
             {
                 $match: {
+                    estado: 1,
                     fecha_consultas: {
                         $gte: fechaStart,
                         $lte: fechaEnd
@@ -306,6 +314,7 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         const reporte = await Model.aggregate([
             {
                 $match: {
+                    estado: 1,
                     fecha_consultas: {
                         $gte: fechaStart,
                         $lte: fechaEnd
@@ -413,4 +422,5 @@ module.exports = {
     list: getVenta,
     update: updateListaVenta,
     deleted: deletedListaVenta,
+    deletedListaVenta,
 }
