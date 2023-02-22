@@ -10,9 +10,16 @@ const myScheme = new Schema({
     dinero: Number,
     punto_venta: String,
     dni: Number,
-    usuario: String,
+    usuario: {
+        type: Schema.Types.ObjectId,
+        ref: 'usuario'
+    },
     estado: Number,
     fecha_consultas: Date,
+    id_apertura: {
+        type: Schema.Types.ObjectId,
+        ref: 'checkoutboxes'
+    }
 
 });
 

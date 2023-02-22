@@ -9,8 +9,9 @@ router.get('/', (req, res) => {
 
     const filterStock = req.query.id || null;
     const productosVencidos = req.query.productos_vencidos || false;
-
-    controller.get(filterStock, productosVencidos)
+    const stockbajo = req.query.stock_bajo || false;
+    
+    controller.get(filterStock, productosVencidos, stockbajo)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })

@@ -13,8 +13,10 @@ router.get('/', (req, res) => {
     const ventas = req.query.ventas || false;
     const stockBajo = req.query.stockBajo || false;
     const stockReporte = req.query.stockReporte || false;
+    const kardex = req.query.kardex || false;
+    const stock_minimo = req.query.stock_minimo || false;
 
-    controller.get(filterProducto, recientes, ventas, stockBajo, stockReporte)
+    controller.get(filterProducto, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo)
         .then((productos) => {
             response.successDataApiV1(req, res, productos, 200)
         })

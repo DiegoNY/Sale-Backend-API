@@ -1,16 +1,18 @@
 const store = require('../database/store.js');
-const hoy = new Date();
-let fecha = hoy.toLocaleDateString("es-ES", {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-})
+
 
 function addInformacionCaja(cajaData) {
 
     return new Promise((resolve, reject) => {
         try {
             //tipo de identificacion 01 o 06  uno para DNI 06 para RUC 
+            const hoy = new Date();
+
+            let fecha = hoy.toLocaleDateString("es-ES", {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+            })
 
             const caja = {
                 tipo: cajaData.tipo,
@@ -20,11 +22,14 @@ function addInformacionCaja(cajaData) {
                 dinero: cajaData.dinero,
                 punto_venta: cajaData.punto_venta,
                 usuario: cajaData.usuario,
-                fecha_consultas: new Date()
+                fecha_consultas: new Date(),
+                id_apertura: cajaData.id_apertura,
             }
 
-            store.add(caja);
-            resolve(caja);
+            store.add(caja)
+                .then(data => resolve(data))
+                .catch(Error => reject(`[Error al registrar informacion de caja] ${Error}`))
+
         } catch (e) {
 
             reject('[Error al registrar APERTURA]' + e)

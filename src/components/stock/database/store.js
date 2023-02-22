@@ -17,7 +17,7 @@ async function addStock(stock) {
 
 }
 
-async function getStock(filterStock, productosVencidos) {
+async function getStock(filterStock, productosVencidos, stock_bajo) {
 
 
     let filter = { estado: 1 }
@@ -71,6 +71,52 @@ async function getStock(filterStock, productosVencidos) {
 
         return stocks;
 
+    }
+
+    if (stock_bajo) {
+        const stocks = await Model.aggregate([
+            {
+                $lookup: {
+                    from: 'productos',
+                    localField: 'id_producto',
+                    let: { stock: "$stock" },
+                    foreignField: '_id',
+                    pipeline: [
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $gte: [
+                                                "$stock_minimo", "$$stock"
+                                            ]
+                                        }
+                                    }
+                                ],
+                            }
+                        }
+                    ],
+                    as: "Producto",
+                }
+            },
+           
+            {
+                $match: {
+                    $and: [
+                        {
+                            $expr: {
+                                $lt: [
+                                    "$stock", ["$Producto.stock_minimo"]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            
+        ])
+
+        return stocks;
     }
 
     const stock = await Model.find(filter);

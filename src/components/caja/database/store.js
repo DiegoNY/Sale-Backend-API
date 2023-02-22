@@ -3,9 +3,14 @@ const hoy = new Date();
 
 
 function addApertura(apertura) {
-
     const myApertura = new Model(apertura);
-    myApertura.save();
+    console.log(apertura);
+    return new Promise((resolve, reject) => {
+        myApertura.save()
+            .then(data => resolve(data))
+            .catch(Error => reject(Error));
+    })
+
 }
 
 async function getApertura(filterApertura) {

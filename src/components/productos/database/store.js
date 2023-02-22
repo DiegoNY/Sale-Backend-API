@@ -1,6 +1,7 @@
 const Model = require('../model/model.js');
 const Lotes = require('../../stock/model/model.js')
 const socket = require('../../../socket.js').socket;
+const mongoose = require('mongoose');
 
 let hoy = new Date();
 
@@ -38,7 +39,7 @@ function addProducto(producto) {
 
 }
 
-async function getProducto(filterProducto, recientes, ventas, stockBajo, stockReporte) {
+async function getProducto(filterProducto, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo) {
 
 
     let filter = { estatus: '1' }
@@ -48,7 +49,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
         filter = { _id: filterProducto }
     }
 
-    if (!recientes && !ventas && !stockReporte) {
+    if (!recientes && !ventas && !stockReporte && !kardex) {
         productos = await Model.find(filter);
     }
 
@@ -253,13 +254,201 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
             ]
         )
     }
+
+    if (kardex) {
+
+        let data = JSON.parse(kardex);
+        console.log(data);
+
+        productos = await Model.aggregate([
+            {
+                $match: {
+                    _id: mongoose.Types.ObjectId(data.id_producto),
+                    estado: 1,
+                }
+            },
+            {
+                $lookup: {
+                    from: 'ventas',
+                    localField: '_id',
+                    let: { id: "$_id" },
+                    foreignField: 'productos._id',
+                    pipeline: [
+                        {
+                            $unwind: "$productos"
+                        },
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $in: [
+                                                "$productos._id", ["$$id"]
+                                            ]
+                                        }
+                                    }
+                                ],
+                                fecha_consultas: {
+                                    $gte: new Date(data.desde),
+                                    $lte: new Date(data.hasta)
+                                }
+                            }
+                        },
+                        {
+                            $sort: {
+                                fecha_consultas: -1
+                            }
+                        }
+                    ],
+                    as: 'ventas'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'nota_salidas',
+                    localField: '_id',
+                    let: { id: "$_id" },
+                    foreignField: 'productos._id',
+                    pipeline: [
+                        {
+                            $unwind: "$productos"
+                        },
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $in: [
+                                                "$productos._id", ["$$id"]
+                                            ]
+                                        }
+                                    }
+                                ],
+                                fecha_consultas: {
+                                    $gte: new Date(data.desde),
+                                    $lte: new Date(data.hasta)
+                                }
+                            }
+                        },
+                        {
+                            $sort: {
+                                fecha_consultas: -1
+                            }
+                        }
+
+                    ],
+                    as: 'salidas'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'listacompras',
+                    localField: '_id',
+                    let: { id: "$_id" },
+                    foreignField: 'productos._id',
+                    pipeline: [
+                        {
+                            $unwind: "$productos"
+                        },
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $in: [
+                                                "$productos._id", ["$$id"]
+                                            ]
+                                        }
+                                    }
+                                ],
+                                fecha_consultas: {
+                                    $gte: new Date(data.desde),
+                                    $lte: new Date(data.hasta)
+                                }
+                            }
+                        },
+                        {
+                            $sort: {
+                                fecha_consultas: -1
+                            }
+                        }
+                    ],
+                    as: 'compras'
+                }
+            },
+
+        ])
+    }
+
+    if (stock_minimo) {
+
+        productos = await Model.aggregate([
+            {
+                $match: {
+                    estado: 1,
+                }
+            },
+            {
+                $lookup: {
+                    from: 'stocks',
+                    localField: '_id',
+                    let: { stock_minimo: "$stock_minimo" },
+                    foreignField: 'id_producto',
+                    pipeline: [
+                        {
+                            $group: {
+                                _id: "$id_producto",
+                                stock: { $sum: "$stock" }
+                            }
+                        },
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $lte: [
+                                                "$stock", "$$stock_minimo"
+                                            ]
+                                        }
+                                    }
+                                ],
+                            }
+                        }
+                    ],
+                    as: "stock",
+                }
+            },
+            {
+                $addFields: {
+                    stock_actual: { $arrayElemAt: ["$stock.stock", 0]},
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    descripcion: { $first: "$descripcion" },
+                    codigo_barras: { $first: "$codigo_barras" },
+                    stock_minimo: { $first: "$stock_minimo" },
+                    stock_actual: {
+                        $first: "$stock_actual"
+                    }
+                }
+            },
+            {
+                $match: {
+                    stock_actual: { $ne: null }
+                }
+            }
+
+        ]);
+    }
+
     return productos;
 
 }
 
 async function updateProducto(id, body, actualizar_stock_venta = false) {
-    // console.log(body);
-    // console.log(id);
+
     const foundProducto = await Model.findOne({
         _id: id
     })
