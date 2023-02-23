@@ -54,7 +54,6 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
     }
 
     if (ventas) {
-        // productos = await Model.find({ estatus: '1', stock: { $gt: 0 } });
 
         productos = await Lotes.aggregate(
             [
@@ -269,25 +268,13 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
             },
             {
                 $lookup: {
-                    from: 'ventas',
+                    from: 'stocks',
                     localField: '_id',
                     let: { id: "$_id" },
-                    foreignField: 'productos._id',
+                    foreignField: 'id_producto',
                     pipeline: [
                         {
-                            $unwind: "$productos"
-                        },
-                        {
                             $match: {
-                                $and: [
-                                    {
-                                        $expr: {
-                                            $in: [
-                                                "$productos._id", ["$$id"]
-                                            ]
-                                        }
-                                    }
-                                ],
                                 fecha_consultas: {
                                     $gte: new Date(data.desde),
                                     $lte: new Date(data.hasta)
@@ -295,87 +282,164 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                             }
                         },
                         {
-                            $sort: {
-                                fecha_consultas: -1
-                            }
-                        }
-                    ],
-                    as: 'ventas'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'nota_salidas',
-                    localField: '_id',
-                    let: { id: "$_id" },
-                    foreignField: 'productos._id',
-                    pipeline: [
-                        {
-                            $unwind: "$productos"
-                        },
-                        {
-                            $match: {
-                                $and: [
+                            $lookup: {
+                                from: 'ventas',
+                                localField: 'id_producto',
+                                let: { lote: "$lote", stock: { $sum: ["$stock_inicial", "$stock_inicial_producto"] } },
+                                foreignField: 'productos._id',
+                                pipeline: [
                                     {
-                                        $expr: {
-                                            $in: [
-                                                "$productos._id", ["$$id"]
-                                            ]
+                                        $unwind: "$productos"
+                                    },
+                                    {
+                                        $match: {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $in: [
+                                                            "$productos.lote", ["$$lote"]
+                                                        ]
+                                                    },
+                                                }
+                                            ],
+                                            fecha_consultas: {
+                                                $gte: new Date(data.desde),
+                                                $lte: new Date(data.hasta)
+                                            }
                                         }
-                                    }
-                                ],
-                                fecha_consultas: {
-                                    $gte: new Date(data.desde),
-                                    $lte: new Date(data.hasta)
-                                }
-                            }
-                        },
-                        {
-                            $sort: {
-                                fecha_consultas: -1
-                            }
-                        }
+                                    },
+                                    {
+                                        $addFields: {
+                                            descripcion: { $concat: ["Salida venta :", "$numero_venta"] },
+                                            fecha: { $concat: ["$fecha_registro", " ", "$hora_registro"] },
+                                        }
+                                    },
 
-                    ],
-                    as: 'salidas'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'listacompras',
-                    localField: '_id',
-                    let: { id: "$_id" },
-                    foreignField: 'productos._id',
-                    pipeline: [
-                        {
-                            $unwind: "$productos"
+                                    {
+                                        $group: {
+                                            _id: "$_id",
+                                            descripcion: { $first: "$descripcion" },
+                                            productos: { $first: "$productos" },
+                                            fecha: { $first: "$fecha" },
+                                            salida: { $sum: "$productos.stock_vendido" },
+                                            stock: { $first: "$productos.stock" }
+
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            _id: 1,
+                                            descripcion: 1,
+                                            productos: 1,
+                                            fecha: 1,
+                                            salida: 1,
+                                            stock: { $subtract: [{ $toInt: "$stock" }, "$salida"] }
+                                        }
+                                    },
+                                    {
+                                        $sort: {
+                                            _id: -1
+                                        }
+                                    },
+                                ],
+                                as: 'ventass'
+                            }
                         },
                         {
-                            $match: {
-                                $and: [
+                            $lookup: {
+                                from: 'nota_salidas',
+                                localField: 'id_producto',
+                                let: { lote: "$lote" },
+                                foreignField: 'productos._id',
+                                pipeline: [
                                     {
-                                        $expr: {
-                                            $in: [
-                                                "$productos._id", ["$$id"]
-                                            ]
+                                        $unwind: "$productos"
+                                    },
+                                    {
+                                        $match: {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $in: [
+                                                            "$productos.lote", ["$$lote"]
+                                                        ]
+                                                    }
+                                                }
+                                            ],
+                                            fecha_consultas: {
+                                                $gte: new Date(data.desde),
+                                                $lte: new Date(data.hasta)
+                                            }
                                         }
-                                    }
+                                    },
+                                    {
+                                        $addFields: {
+                                            descripcion: { $concat: ["Salida nota :", "$numeroDocumento"] },
+                                            fecha: { $concat: ["$fecha_registro", " ", "$hora_registro"] },
+
+                                        }
+                                    },
+
+                                    {
+                                        $group: {
+                                            _id: "$_id",
+                                            fecha: { $first: "$fecha" },
+                                            descripcion: { $first: "$descripcion" },
+                                            salida: { $sum: "$productos.stock_saliente" },
+                                            motivo: { $first: "$motivo" },
+                                            stock: { $first: "$productos.stock" }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            _id: 1,
+                                            fecha: 1,
+                                            descripcion: 1,
+                                            salida: 1,
+                                            motivo: 1,
+                                            stock: { $subtract: [{ $toInt: "$stock" }, "$salida"] }
+                                        }
+                                    },
+                                    {
+                                        $sort: {
+                                            _id: 1
+                                        }
+                                    },
+
                                 ],
-                                fecha_consultas: {
-                                    $gte: new Date(data.desde),
-                                    $lte: new Date(data.hasta)
-                                }
+                                as: 'salidas'
+                            }
+                        },
+                        {
+                            $addFields: {
+                                descripcion: { $concat: ["Compra :", "$lote"] }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$_id",
+                                descripcion: { $first: "$descripcion" },
+                                entrada: { $sum: "$stock_inicial" },
+                                stock: { $first: { $sum: ["$stock_inicial", "$stock_inicial_producto"] } },
+                                fecha: { $first: "$fecha_registro" },
+                                ventas: { $first: "$ventass" },
+                                salidas: { $first: "$salidas" }
                             }
                         },
                         {
                             $sort: {
-                                fecha_consultas: -1
+                                _id: -1
                             }
                         }
                     ],
                     as: 'compras'
                 }
             },
+            {
+                $sort: {
+                    fecha_consultas: 1
+                }
+            }
 
         ])
     }
@@ -420,7 +484,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
             },
             {
                 $addFields: {
-                    stock_actual: { $arrayElemAt: ["$stock.stock", 0]},
+                    stock_actual: { $arrayElemAt: ["$stock.stock", 0] },
                 }
             },
             {
