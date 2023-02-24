@@ -8,9 +8,10 @@ router.get('/', (req, res) => {
 
 
     const filterCliente = req.query.id || null;
-    console.log(filterCliente);
     const filterClienteDniORuc = req.query.identificacion || false;
-    controller.get(filterCliente, filterClienteDniORuc)
+    const tiposClientes = req.query.tipos_clientes || false;
+
+    controller.get(filterCliente, filterClienteDniORuc, tiposClientes)
         .then((data) => {
             response.successDataApiV1(req, res, [{ error: false, body: data }], 200)
         })

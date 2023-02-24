@@ -39,12 +39,12 @@ function addCliente(clienteData) {
 
 }
 
-function getCliente(filterCliente, filterClienteDniORuc) {
+function getCliente(filterCliente, filterClienteDniORuc, tiposClientes) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filterCliente, filterClienteDniORuc));
+            resolve(store.list(filterCliente, filterClienteDniORuc, tiposClientes));
         } catch (e) {
             rejec(`[Error al mostrar CLIENTE ] ${e}`);
         }

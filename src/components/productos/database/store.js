@@ -39,7 +39,7 @@ function addProducto(producto) {
 
 }
 
-async function getProducto(filterProducto, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo) {
+async function getProducto(filterProducto, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias) {
 
 
     let filter = { estatus: '1' }
@@ -49,7 +49,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
         filter = { _id: filterProducto }
     }
 
-    if (!recientes && !ventas && !stockReporte && !kardex) {
+    if (!recientes && !ventas && !stockReporte && !kardex && !reporteGanancias) {
         productos = await Model.find(filter);
     }
 
@@ -75,7 +75,6 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                     $addFields: {
                         codigo_barras: { $arrayElemAt: ["$informacionProducto.codigo_barras", 0] },
                         precio_venta: { $arrayElemAt: ["$informacionProducto.precio_venta", 0] },
-                        fecha_vencimiento: { $arrayElemAt: ["$informacionProducto.fecha_vencimiento", 0] },
                         precio_venta_caja: { $arrayElemAt: ["$informacionProducto.precio_venta_caja", 0] },
                         precio_venta_tableta: { $arrayElemAt: ["$informacionProducto.precio_venta_tableta", 0] },
                         stock_caja: { $arrayElemAt: ["$informacionProducto.stock_caja", 0] },
@@ -423,14 +422,15 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                 stock: { $first: { $sum: ["$stock_inicial", "$stock_inicial_producto"] } },
                                 fecha: { $first: "$fecha_registro" },
                                 ventas: { $first: "$ventass" },
-                                salidas: { $first: "$salidas" }
+                                salidas: { $first: "$salidas" },
                             }
                         },
                         {
                             $sort: {
                                 _id: -1
                             }
-                        }
+                        },
+
                     ],
                     as: 'compras'
                 }
@@ -505,6 +505,81 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
             }
 
         ]);
+    }
+
+    if (reporteGanancias) {
+        let data = JSON.parse(reporteGanancias);
+        let fechaStart = new Date(data.desde);
+        let fechaEnd = new Date(data.hasta);
+
+        const reporte_ganancias = await Model.aggregate([
+            {
+                $match: {
+                    estado: 1,
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'ventas',
+                    localField: '_id',
+                    let: { id: '$_id' },
+                    foreignField: 'productos._id',
+                    pipeline: [
+                        {
+                            $unwind: "$productos"
+                        },
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $in: [
+                                                "$productos._id", ["$$id"]
+                                            ]
+                                        },
+                                    }
+                                ],
+                                fecha_consultas: {
+                                    $gte: fechaStart,
+                                    $lte: fechaEnd
+                                }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$productos._id",
+                                cantidad: { $sum: "$productos.stock_vendido" }
+                            }
+                        }
+                    ],
+                    as: 'Ventas'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    descripcion: 1,
+                    precio_venta: 1,
+                    descripcion: 1,
+                    laboratorio: "$id_laboratorio",
+                    cantidad_vendida: { $arrayElemAt: ["$Ventas.cantidad", 0] },
+                    total: { $multiply: [{ $arrayElemAt: ["$Ventas.cantidad", 0] }, "$precio_venta"] },
+                    utilidad: {
+                        $subtract: [
+                            {
+                                $multiply: [{ $arrayElemAt: ["$Ventas.cantidad", 0] }, "$precio_venta"]
+                            },
+                            {
+                                $multiply: [{ $arrayElemAt: ["$Ventas.cantidad", 0] }, "$precio_compra"]
+                            }
+                        ]
+                    }
+                }
+            }
+        ]);
+
+        return reporte_ganancias;
     }
 
     return productos;

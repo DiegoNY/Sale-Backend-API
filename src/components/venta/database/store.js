@@ -65,6 +65,8 @@ function actualizarStockLotes(productos = []) {
     }
 }
 
+let ventasRecientes = [];
+
 /**
  * Recibe la lista de compra la guarda en BD 
  * cuando la compra a sido guardada se actualiza el estock de los productos 
@@ -93,6 +95,13 @@ function addVenta(venta) {
                         productos: listaventa.productos
                     }
                 )
+
+                ventasRecientes.push({
+                    usuario: 'administrador',
+                    hora: listaventa.hora_registro,
+                    venta: listaventa,
+                    _id: listaventa.usuario
+                })
 
                 socket.io.emit(
                     'ventas_recientes',
@@ -363,6 +372,7 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         return reporte;
     }
 
+    
     const listaVenta = await Model.find(filter).sort({ _id: -1 });
     return listaVenta;
 

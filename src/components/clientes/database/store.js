@@ -12,7 +12,7 @@ function addCliente(cliente) {
         });
 }
 
-async function getCliente(filterCliente, filterClienteIdentificacion = false) {
+async function getCliente(filterCliente, filterClienteIdentificacion = false, tiposClientes) {
 
 
 
@@ -24,6 +24,24 @@ async function getCliente(filterCliente, filterClienteIdentificacion = false) {
 
     if (filterCliente !== null && !filterClienteIdentificacion) {
         filter = { _id: filterCliente }
+    }
+
+    if (tiposClientes) {
+        const tipos = await Model.aggregate([
+            {
+                $group: {
+                    _id: "$tipo_identificacion",
+                    cantidad: { $sum: 1 }
+                }
+            },
+            {
+                $project: {
+                    name: "$_id",
+                    value: "$cantidad"
+                }
+            }
+        ]);
+        return tipos
     }
 
     const cliente = await Model.find(filter);
