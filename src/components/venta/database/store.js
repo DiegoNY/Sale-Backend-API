@@ -308,7 +308,13 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
                 }
             },
             {
-                $project: { numero_documento: "$numero_venta", subtotal: 1, igv: 1, total: 1, fecha_registro: 1, _id: 1 }
+                $project: {
+                    numero_documento: "$numero_venta", subtotal: 1,
+                    igv: 1, total: 1, fecha_registro: 1,
+                    _id: 1, correlativo: 1, serie: 1,
+                    cliente: 1, identificacion: 1,
+                    tipo_documento: 1, leyenda: 1, total: 1
+                }
             },
 
         ]).sort({ _id: -1 })
@@ -372,7 +378,7 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         return reporte;
     }
 
-    
+
     const listaVenta = await Model.find(filter).sort({ _id: -1 });
     return listaVenta;
 

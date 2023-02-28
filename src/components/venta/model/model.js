@@ -56,6 +56,7 @@ const mySchemeVenta = new Schema({
     ip_maquina: String,
     fecha_consultas: Date,
     cuotas: Number,
+    leyenda: String,
     informacion_cuotas: [mySchemeCuotas]
 });
 
