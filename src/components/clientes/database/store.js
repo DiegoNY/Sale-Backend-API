@@ -5,11 +5,16 @@ const hoy = new Date();
 function addCliente(cliente) {
 
     const myCliente = new Model(cliente);
-    myCliente.save()
-        .then(cliente => console.log(cliente))
-        .catch(e => {
-            console.log('[ Error al registrar CLIENTE ]' + e)
-        });
+
+    return new Promise((resolve, reject) => {
+        myCliente.save()
+            .then(cliente => resolve(cliente))
+            .catch(e => {
+                reject(e);
+                console.log('[ Error al registrar CLIENTE ]' + e)
+            });
+    })
+
 }
 
 async function getCliente(filterCliente, filterClienteIdentificacion = false, tiposClientes) {

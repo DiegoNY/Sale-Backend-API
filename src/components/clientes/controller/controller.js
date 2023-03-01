@@ -26,8 +26,9 @@ function addCliente(clienteData) {
 
             }
 
-            store.add(cliente);
-            resolve(cliente);
+            store.add(cliente)
+                .then(res => resolve(res))
+                .catch(e => reject('[ERROR AL AGREGAR CLIENTE CONTROLLER]' + e));
         } catch (e) {
 
             reject('[Error al agregar CLIENTE]' + e)
