@@ -232,7 +232,8 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         descripcion: 1,
                         stock_inicial: 1,
                         codigo_barras: 1,
-                        estado: 1
+                        estado: 1,
+                        stock_minimo: 1,
                     }
                 },
                 {
@@ -245,7 +246,9 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         salidas: { $first: "$stock_inicial" },
                         ventas: { $first: "$Ventas" },
                         stock: { $first: "$stock" },
-                        stock_inicial: { $first: { $sum: ["$Salida", "$Ventas", "$stock"] } }
+                        stock_inicial: { $first: { $sum: ["$Salida", "$Ventas", "$stock"] } },
+                        stock_minimo: {$first: "$stock_minimo"},
+
                     }
                 }
 
