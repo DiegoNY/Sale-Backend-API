@@ -6,6 +6,7 @@ const { addProductosVendidos } = require('../../productos_vendidos/controller/co
 const Gastos = require('../../gastos/model/model.js');
 const { updateStock } = require('../../stock/database/store.js');
 const hoy = new Date();
+const historial = require('../historial/controller.js');
 
 
 function sumarStockProductosComprados(productos = []) {
@@ -65,7 +66,6 @@ function actualizarStockLotes(productos = []) {
     }
 }
 
-let ventasRecientes = [];
 
 /**
  * Recibe la lista de compra la guarda en BD 
@@ -86,6 +86,15 @@ function addVenta(venta) {
 
                 add({ serie: listaventa.serie, numero: listaventa.numero_venta });
 
+                historial.addVenta({
+                    usuario: 'administrador',
+                    hora: listaventa.hora_registro,
+                    venta: listaventa,
+                    _id: listaventa.usuario
+                });
+                
+                const ventasRecientes = historial.getHistorial();
+
                 socket.io.emit(
                     'serie_venta_uso',
                     {
@@ -96,21 +105,10 @@ function addVenta(venta) {
                     }
                 )
 
-                ventasRecientes.push({
-                    usuario: 'administrador',
-                    hora: listaventa.hora_registro,
-                    venta: listaventa,
-                    _id: listaventa.usuario
-                })
 
                 socket.io.emit(
                     'ventas_recientes',
-                    {
-                        usuario: 'administrador',
-                        hora: listaventa.hora_registro,
-                        venta: listaventa,
-                        _id: listaventa.usuario
-                    }
+                    ventasRecientes
                 )
 
                 listaventa.productos.map(producto => {

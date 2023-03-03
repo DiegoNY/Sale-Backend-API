@@ -1,5 +1,4 @@
 const Model = require('../model/model.js')
-const hoy = new Date();
 
 
 function addApertura(apertura) {
@@ -13,12 +12,19 @@ function addApertura(apertura) {
 
 }
 
-async function getApertura(filterApertura) {
+async function getApertura(filterApertura, aperturo) {
 
 
     let filter = { estado: 1 }
     if (filterApertura !== null) {
         filter = { _id: filterApertura }
+    }
+
+    if (aperturo) {
+
+        const res = Model.find({ usuario: aperturo }).sort({ _id: -1 }).limit(1);
+
+        return res;
     }
 
     const apertura = await Model.find(filter);

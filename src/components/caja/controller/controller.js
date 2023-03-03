@@ -4,19 +4,17 @@ const store = require('../database/store.js');
 function addInformacionCaja(cajaData) {
 
     return new Promise((resolve, reject) => {
+        if (!cajaData.usuario) {
+            reject("USUARIO REQUERIDO");
+        }
+        
         try {
             //tipo de identificacion 01 o 06  uno para DNI 06 para RUC 
             const hoy = new Date();
 
-            let fecha = hoy.toLocaleDateString("es-ES", {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-            })
-
             const caja = {
                 tipo: cajaData.tipo,
-                fecha: fecha,
+                fecha: `${hoy.toISOString()}`.substring(0, 10),
                 dni: cajaData.dni,
                 estado: 1,
                 dinero: cajaData.dinero,
@@ -41,12 +39,12 @@ function addInformacionCaja(cajaData) {
 
 }
 
-function getApertura(filterApertura) {
+function getApertura(filterApertura, aperturo) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filterApertura));
+            resolve(store.list(filterApertura, aperturo));
         } catch (e) {
             rejec(`[Error al mostrar APERTURA ] ${e}`);
         }

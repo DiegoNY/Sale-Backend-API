@@ -2,7 +2,7 @@ const express = require('express');
 const controller = require('./controller/controller.js')
 const response = require('../../network/response.js')
 const router = express.Router();
-
+const historials = require('./historial/controller.js')
 
 router.get('/', (req, res) => {
 
@@ -16,8 +16,14 @@ router.get('/', (req, res) => {
     const reporteVentas = req.query.reporte || false;
     const reporte = req.query.reporte_busqueda || false;
     const ventasMensuales = req.query.reporte_mensuales || false;
-   
-    
+    const historial = req.query.historial || false;
+
+    if (historial) {
+        const data = historials.getHistorial();
+        response.success(req, res, data, 200);
+        return;
+    }
+
     controller.get(filterCompra, skip, limite, ventasRecientes, diarias, usuario, reporteVentas, reporte, ventasMensuales)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
@@ -30,7 +36,13 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
 
-    console.log(req.body);
+    const historial = req.query.historial || false;
+
+    if (historial) {
+        const data = historials.addVenta(req.body);
+        response.success(req, res, data, 200);
+        return;
+    }
 
     controller.add(req.body)
         .then((data) => {

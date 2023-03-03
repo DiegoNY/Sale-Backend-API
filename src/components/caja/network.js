@@ -6,9 +6,9 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
 
-
+    const aperturo = req.query.aperturo || false;
     const filterApertura = req.query.id || null;
-    controller.get(filterApertura)
+    controller.get(filterApertura, aperturo)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })
