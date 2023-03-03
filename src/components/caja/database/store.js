@@ -12,7 +12,7 @@ function addApertura(apertura) {
 
 }
 
-async function getApertura(filterApertura, aperturo) {
+async function getApertura(filterApertura, aperturo, reporte) {
 
 
     let filter = { estado: 1 }
@@ -23,11 +23,67 @@ async function getApertura(filterApertura, aperturo) {
     if (aperturo) {
 
         const res = Model.find({ usuario: aperturo }).sort({ _id: -1 }).limit(1);
-
         return res;
     }
 
-    const apertura = await Model.find(filter);
+    if (reporte) {
+        return Model.aggregate([
+            {
+                $match: {
+                    tipo: "APERTURA"
+                }
+            },
+            {
+                $lookup: {
+                    from: 'usuarios',
+                    localField: 'usuario',
+                    foreignField: '_id',
+                    as: 'usuario'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'checkoutboxes',
+                    localField: '_id',
+                    foreignField: 'id_apertura',
+                    pipeline: [
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $in: [
+                                                "$tipo", ["CIERRE"]
+                                            ]
+                                        },
+                                    }
+                                ],
+                            }
+                        },
+
+                    ],
+                    as: 'cierre'
+                }
+            },
+            {
+                $project: {
+                    usuario: { $arrayElemAt: ["$usuario.nombre", 0] },
+                    fecha_registro: "$fecha",
+                    hora_registro: "$hora_registro",
+                    info_registro: { $concat: ["$fecha", " ", "$hora_registro"] },
+                    dinero_registro: "$dinero",
+                    fecha_cierre: { $arrayElemAt: ["$cierre.fecha", 0] },
+                    hora_cierre: { $arrayElemAt: ["$cierre.hora_registro", 0] },
+                    info_cierre: { $concat: [{ $arrayElemAt: ["$cierre.fecha", 0] }, " ", { $arrayElemAt: ["$cierre.hora_registro", 0] }] },
+                    dinero_cierre: { $arrayElemAt: ["$cierre.dinero", 0] },
+                    total: { $sum: ["dinero", { $arrayElemAt: ["$cierre.dinero", 0] }] }
+                }
+            }
+
+        ]).sort({ _id: -1 })
+    }
+
+    const apertura = await Model.find(filter).sort({ _id: -1 });
     return apertura;
 
 }

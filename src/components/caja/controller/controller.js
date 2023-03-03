@@ -7,10 +7,11 @@ function addInformacionCaja(cajaData) {
         if (!cajaData.usuario) {
             reject("USUARIO REQUERIDO");
         }
-        
+
         try {
             //tipo de identificacion 01 o 06  uno para DNI 06 para RUC 
             const hoy = new Date();
+            let hora = hoy.toLocaleTimeString();
 
             const caja = {
                 tipo: cajaData.tipo,
@@ -22,6 +23,7 @@ function addInformacionCaja(cajaData) {
                 usuario: cajaData.usuario,
                 fecha_consultas: new Date(),
                 id_apertura: cajaData.id_apertura,
+                hora_registro: hora
             }
 
             store.add(caja)
@@ -39,12 +41,12 @@ function addInformacionCaja(cajaData) {
 
 }
 
-function getApertura(filterApertura, aperturo) {
+function getApertura(filterApertura, aperturo, reporte) {
 
     return new Promise((resolve, rejec) => {
         try {
 
-            resolve(store.list(filterApertura, aperturo));
+            resolve(store.list(filterApertura, aperturo, reporte));
         } catch (e) {
             rejec(`[Error al mostrar APERTURA ] ${e}`);
         }

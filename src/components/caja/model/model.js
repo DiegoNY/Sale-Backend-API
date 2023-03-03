@@ -16,6 +16,7 @@ const myScheme = new Schema({
     },
     estado: Number,
     fecha_consultas: Date,
+    hora_registro: String,
     id_apertura: {
         type: Schema.Types.ObjectId,
         ref: 'checkoutboxes'
