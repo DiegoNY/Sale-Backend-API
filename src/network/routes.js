@@ -17,7 +17,11 @@ const gastos = require('../components/gastos/network');
 const productosVendidos = require('../components/productos_vendidos/network');
 const notaCredito = require('../components/nota_credito/network');
 
-const fecha = new Date()
+/**Impresion 🖨 */
+const ticket = require('../components/venta/impresion_ticket/network');
+/**End impresion */
+
+const fecha = new Date();
 const { socket } = require('../socket');
 
 
@@ -41,18 +45,22 @@ const routes = function (server) {
     server.use('/api/v2/gastos', gastos);
     server.use('/api/v2/productos_vendidos', productosVendidos);
     server.use('/api/v2/nota_credito', notaCredito);
+    server.use('/api/v2/impresion', ticket);
 
     server.use('/ip', (req, res) => {
 
-        var ip = req.ip; 
-        if (ip.substr(0, 7) == '::ffff:') { 
+        var ip = req.ip;
+        if (ip.substr(0, 7) == '::ffff:') {
             ip = ip.substr(7);
         }
 
 
         res.json({ "ip": ip, "protocol": req.protocol, "headers": req.headers['x-forwarded-for'] });
-       
+
     })
+
+
+
     socket.io.on('connection', socket => {
 
         console.log('Socket conectado : ' + socket.id + fecha);
