@@ -92,7 +92,7 @@ function addVenta(venta) {
                     venta: listaventa,
                     _id: listaventa.usuario
                 });
-                
+
                 const ventasRecientes = historial.getHistorial();
 
                 socket.io.emit(
@@ -127,7 +127,7 @@ function addVenta(venta) {
 
 }
 
-async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usuario, reporteVentas, reporte, ventasMensuales) {
+async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usuario, reporteVentas, reporte, ventasMensuales, reporteCaja) {
 
     let filter = { estado: 1 }
 
@@ -376,6 +376,12 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         return reporte;
     }
 
+    if (!!reporteCaja) {
+        let fechasConsulta = JSON.parse(reporteCaja);
+        let fechaStart = new Date(fechasConsulta.desde);
+        let fechaEnd = new Date(fechasConsulta.hasta);
+        return await Model.find({ fecha_consultas: { $gte: fechaStart, $lte: fechaEnd }, usuario: fechasConsulta.usuario })
+    }
 
     const listaVenta = await Model.find(filter).sort({ _id: -1 });
     return listaVenta;

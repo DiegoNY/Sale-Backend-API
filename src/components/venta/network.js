@@ -17,6 +17,7 @@ router.get('/', (req, res) => {
     const reporte = req.query.reporte_busqueda || false;
     const ventasMensuales = req.query.reporte_mensuales || false;
     const historial = req.query.historial || false;
+    const reporteCaja = req.query.reporte_caja || false;
 
     if (historial) {
         const data = historials.getHistorial();
@@ -24,7 +25,7 @@ router.get('/', (req, res) => {
         return;
     }
 
-    controller.get(filterCompra, skip, limite, ventasRecientes, diarias, usuario, reporteVentas, reporte, ventasMensuales)
+    controller.get(filterCompra, skip, limite, ventasRecientes, diarias, usuario, reporteVentas, reporte, ventasMensuales, reporteCaja)
         .then((data) => {
             response.successDataApiV1(req, res, data, 200)
         })

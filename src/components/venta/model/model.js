@@ -51,7 +51,10 @@ const mySchemeVenta = new Schema({
     fecha_actualizacion: String,
     serie: String,
     correlativo: String,
-    usuario: String,
+    usuario: {
+        type: Schema.Types.ObjectId,
+        ref: 'usuario'
+    },
     nombre_usuario: String,
     ip_maquina: String,
     fecha_consultas: Date,
