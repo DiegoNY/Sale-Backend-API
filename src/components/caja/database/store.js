@@ -68,7 +68,7 @@ async function getApertura(filterApertura, aperturo, reporte) {
             },
             {
                 $project: {
-                    id_usuario: "$_id",
+                    id_usuario: { $arrayElemAt: ["$usuario._id", 0] },
                     usuario: { $arrayElemAt: ["$usuario.nombre", 0] },
                     fecha_registro: "$fecha",
                     hora_registro: "$hora_registro",
@@ -78,7 +78,7 @@ async function getApertura(filterApertura, aperturo, reporte) {
                     hora_cierre: { $arrayElemAt: ["$cierre.hora_registro", 0] },
                     info_cierre: { $concat: [{ $arrayElemAt: ["$cierre.fecha", 0] }, " ", { $arrayElemAt: ["$cierre.hora_registro", 0] }] },
                     dinero_cierre: { $arrayElemAt: ["$cierre.dinero", 0] },
-                    total: { $sum: ["dinero", { $arrayElemAt: ["$cierre.dinero", 0] }] },
+                    total: { $sum: ["$dinero", { $arrayElemAt: ["$cierre.dinero", 0] }] },
                     consulta_registro: "$fecha_consultas",
                     consulta_cierre: { $arrayElemAt: ["$cierre.fecha_consultas", 0] }
 

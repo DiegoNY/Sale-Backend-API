@@ -69,8 +69,8 @@ class Printer {
                     medida = MEDIDAS[key].nombre
                 }
             }
-            this.printer.leftRight(`${producto.descripcion} ${producto.cantidad_comprada} ${medida}`, `S/${producto.precio}`)
-            this.printer.leftRight(`Total :`, `S/${producto.total}`)
+            this.printer.leftRight(`${producto.descripcion} ${producto.cantidad_comprada} ${medida}`, `S/${producto.precio}   `)
+            this.printer.leftRight(`Total :`, `S/${producto.total}   `)
 
         })
 

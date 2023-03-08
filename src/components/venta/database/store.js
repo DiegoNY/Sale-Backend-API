@@ -7,6 +7,7 @@ const Gastos = require('../../gastos/model/model.js');
 const { updateStock } = require('../../stock/database/store.js');
 const hoy = new Date();
 const historial = require('../historial/controller.js');
+const mongoose = require('mongoose');
 
 
 function sumarStockProductosComprados(productos = []) {
@@ -111,6 +112,14 @@ function addVenta(venta) {
                     ventasRecientes
                 )
 
+                socket.io.emit(
+                    'ventas_recientes_usuarios',
+                    {
+                        _id: listaventa.usuario,
+                        venta: listaventa
+                    }
+                )
+
                 listaventa.productos.map(producto => {
                     addProductosVendidos(producto, listaventa._id)
                 })
@@ -211,7 +220,7 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         const GastosRealizados = await Gastos.aggregate([
             {
                 $match: {
-                    id_usuario: usuario,
+                    id_usuario: mongoose.Types.ObjectId(usuario),
                     fecha_registro: {
                         $gt: comienzoDia,
                         $lt: finDeDia
@@ -233,7 +242,7 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         const CantidadRecaudada = await Model.aggregate([
             {
                 $match: {
-                    usuario: usuario,
+                    usuario: mongoose.Types.ObjectId(usuario),
                     fecha_consultas: {
                         $gt: comienzoDia,
                         $lt: finDeDia
@@ -380,8 +389,81 @@ async function getVenta(filterVenta, skip, limite, ventasRecientes, diarias, usu
         let fechasConsulta = JSON.parse(reporteCaja);
         let fechaStart = new Date(fechasConsulta.desde);
         let fechaEnd = new Date(fechasConsulta.hasta);
-        return await Model.find({ fecha_consultas: { $gte: fechaStart, $lte: fechaEnd }, usuario: fechasConsulta.usuario })
+
+
+        const PrimeraVenta = await Model.find({ tipo_documento: 'BOLETA ELECTRONICA', fecha_consultas: { $gte: fechaStart, $lte: fechaEnd }, usuario: fechasConsulta.usuario }).sort({ _id: 1 }).limit(1);
+        const UltimaVenta = await Model.find({ tipo_documento: 'BOLETA ELECTRONICA', fecha_consultas: { $gte: fechaStart, $lte: fechaEnd }, usuario: fechasConsulta.usuario }).sort({ _id: -1 }).limit(1);
+
+        const Total = await Model.aggregate([
+            {
+                $match: {
+                    tipo_documento: 'BOLETA ELECTRONICA',
+                    fecha_consultas: {
+                        $gte: fechaStart,
+                        $lte: fechaEnd
+                    },
+                    usuario: mongoose.Types.ObjectId(fechasConsulta.usuario)
+                }
+            },
+            {
+                $group: {
+                    _id: "$usuario",
+                    total: { $sum: "$total" }
+                }
+            }
+        ])
+        const PrimeraVentaFac = await Model.find({ tipo_documento: 'FACTURA ELECTRONICA', fecha_consultas: { $gte: fechaStart, $lte: fechaEnd }, usuario: fechasConsulta.usuario }).sort({ _id: 1 }).limit(1);
+        const UltimaVentaFac = await Model.find({ tipo_documento: 'FACTURA ELECTRONICA', fecha_consultas: { $gte: fechaStart, $lte: fechaEnd }, usuario: fechasConsulta.usuario }).sort({ _id: -1 }).limit(1);
+
+        const TotalFac = await Model.aggregate([
+            {
+                $match: {
+                    tipo_documento: 'FACTURA ELECTRONICA',
+                    fecha_consultas: {
+                        $gte: fechaStart,
+                        $lte: fechaEnd
+                    },
+                    usuario: mongoose.Types.ObjectId(fechasConsulta.usuario)
+                }
+            },
+            {
+                $group: {
+                    _id: "$usuario",
+                    total: { $sum: "$total" }
+                }
+            }
+        ])
+
+        const PrimeraVentaTicket = await Model.find({ tipo_documento: 'TICKET ELECTRONICO', fecha_consultas: { $gte: fechaStart, $lte: fechaEnd }, usuario: fechasConsulta.usuario }).sort({ _id: 1 }).limit(1);
+        const UltimaVentaTicket = await Model.find({ tipo_documento: 'TICKET ELECTRONICO', fecha_consultas: { $gte: fechaStart, $lte: fechaEnd }, usuario: fechasConsulta.usuario }).sort({ _id: -1 }).limit(1);
+        const TotalTicket = await Model.aggregate([
+            {
+                $match: {
+                    tipo_documento: 'TICKET ELECTRONICO',
+                    fecha_consultas: {
+                        $gte: fechaStart,
+                        $lte: fechaEnd
+                    },
+                    usuario: mongoose.Types.ObjectId(fechasConsulta.usuario)
+                }
+            },
+            {
+                $group: {
+                    _id: "$usuario",
+                    total: { $sum: "$total" }
+                }
+            }
+        ])
+
+
+        return {
+            BOLETAS: { PRIMERA_VENTA: PrimeraVenta[0]?.numero_venta, ULTIMA_VENTA: UltimaVenta[0]?.numero_venta, TOTAL: Total[0]?.total },
+            FACTURAS: { PRIMERA_VENTA: PrimeraVentaFac[0]?.numero_venta, ULTIMA_VENTA: UltimaVentaFac[0]?.numero_venta, TOTAL: TotalFac[0]?.total },
+            TICKETS: { PRIMERA_VENTA: PrimeraVentaTicket[0]?.numero_venta, ULTIMA_VENTA: UltimaVentaTicket[0]?.numero_venta, TOTAL: TotalTicket[0]?.total },
+            TOTAL_VENTAS: Number(TotalFac[0]?.total || 0) + Number(TotalTicket[0]?.total || 0) + Number(Total[0].total || 0)
+        };
     }
+
 
     const listaVenta = await Model.find(filter).sort({ _id: -1 });
     return listaVenta;
