@@ -247,7 +247,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         ventas: { $first: "$Ventas" },
                         stock: { $first: "$stock" },
                         stock_inicial: { $first: { $sum: ["$Salida", "$Ventas", "$stock"] } },
-                        stock_minimo: {$first: "$stock_minimo"},
+                        stock_minimo: { $first: "$stock_minimo" },
 
                     }
                 }
@@ -284,6 +284,11 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                             }
                         },
                         {
+                            $sort: {
+                                id: -1
+                            }
+                        },
+                        {
                             $lookup: {
                                 from: 'ventas',
                                 localField: 'id_producto',
@@ -316,15 +321,14 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                             fecha: { $concat: ["$fecha_registro", " ", "$hora_registro"] },
                                         }
                                     },
-
                                     {
                                         $group: {
                                             _id: "$_id",
-                                            descripcion: { $first: "$descripcion" },
-                                            productos: { $first: "$productos" },
-                                            fecha: { $first: "$fecha" },
+                                            descripcion: { $last: "$descripcion" },
+                                            productos: { $last: "$productos" },
+                                            fecha: { $last: "$fecha" },
                                             salida: { $sum: "$productos.stock_vendido" },
-                                            stock: { $first: "$productos.stock" }
+                                            stock: { $last: "$productos.stock" }
 
                                         }
                                     },
@@ -338,11 +342,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                             stock: { $subtract: [{ $toInt: "$stock" }, "$salida"] }
                                         }
                                     },
-                                    {
-                                        $sort: {
-                                            _id: -1
-                                        }
-                                    },
+
                                 ],
                                 as: 'ventass'
                             }
@@ -356,6 +356,11 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                 pipeline: [
                                     {
                                         $unwind: "$productos"
+                                    },
+                                    {
+                                        $sort: {
+                                            _id: -1
+                                        }
                                     },
                                     {
                                         $match: {
@@ -381,7 +386,6 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
 
                                         }
                                     },
-
                                     {
                                         $group: {
                                             _id: "$_id",
@@ -402,11 +406,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                             stock: { $subtract: [{ $toInt: "$stock" }, "$salida"] }
                                         }
                                     },
-                                    {
-                                        $sort: {
-                                            _id: 1
-                                        }
-                                    },
+
 
                                 ],
                                 as: 'salidas'
@@ -428,21 +428,12 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                 salidas: { $first: "$salidas" },
                             }
                         },
-                        {
-                            $sort: {
-                                _id: -1
-                            }
-                        },
 
                     ],
                     as: 'compras'
                 }
             },
-            {
-                $sort: {
-                    fecha_consultas: 1
-                }
-            }
+
 
         ])
     }

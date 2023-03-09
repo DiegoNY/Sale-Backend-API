@@ -46,6 +46,28 @@ router.post('/', (req, res) => {
 
 })
 
+router.get('/perfil/:id', (req, res) => {
+
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).send({ error: true, message: 'El id es requerido' });
+    }
+
+    controller.perfil(id)
+        .then(data => {
+            res.status(200).send({
+                error: false,
+                message: "ok",
+                data: data
+            })
+        }).catch(error => {
+            res.status(400).send({ error: true, message: `${error}`, data: [] })
+        })
+
+})
+
+
 router.put('/:id', (req, res) => {
 
     controller.update(req.params.id, req.body)

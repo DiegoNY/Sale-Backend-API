@@ -81,10 +81,28 @@ function validationUsuario(body) {
     })
 }
 
+function perfil(id) {
+
+    return new Promise((resolve, reject) => {
+
+        if (!id) {
+            return reject('datos requeridos');
+        }
+
+        store.perfil(id)
+            .then(rta => resolve(rta))
+            .catch(error => {
+                console.log(error);
+                reject(error)
+            });
+    })
+}
+
 module.exports = {
     add: addUsuario,
     get: getUsuario,
     update: updateUsuario,
     delete: deleteUsuario,
     validation: validationUsuario,
+    perfil,
 };

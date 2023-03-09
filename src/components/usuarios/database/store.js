@@ -1,6 +1,7 @@
 const Model = require('../model/model.js')
 const hoy = new Date();
-
+const VENTAS = require('../../venta/model/model.js');
+const mongoose = require('mongoose');
 
 function addUsuario(usuario) {
 
@@ -74,10 +75,68 @@ async function velidationUsuario(body) {
     }
 
 }
+
+async function perfil(id) {
+
+    const series = await VENTAS.aggregate([
+        {
+            $match: {
+                usuario: mongoose.Types.ObjectId(id)
+            }
+        },
+        {
+            $group: {
+                _id: "$serie"
+            }
+        },
+
+    ])
+
+    const ventas = await VENTAS.aggregate([
+        {
+            $match: {
+                usuario: mongoose.Types.ObjectId(id)
+            }
+        },
+        {
+            $project: {
+                fecha_registro: 1,
+                serie: 1,
+                total: 1,
+                correlativo: 1,
+                numero_venta: 1,
+                tipo_documento: 1,
+            }
+        },
+        {
+            $sort: {
+                _id: 1
+            }
+        },
+        {
+            $group: {
+                _id: "$serie",
+                ventas: { $push: "$$ROOT" },
+                primera_venta: { $first: "$correlativo" },
+                ultima_venta: { $last: "$correlativo" },
+                total: { $sum: "$total" },
+                tipo_documento: { $last: "$tipo_documento" },
+                fecha: {$first: "$fecha_registro"}
+            },
+        },
+
+
+    ])
+    return {
+        series_utilizadas: series,
+        actividad_reciente: ventas
+    };
+}
 module.exports = {
     add: addUsuario,
     list: getUsuario,
     update: updateUsuario,
     deleted: deletedUsuario,
     validation: velidationUsuario,
+    perfil,
 }
