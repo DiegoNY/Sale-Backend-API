@@ -1,5 +1,7 @@
 const { ThermalPrinter, PrinterTypes, CharacterSet, BreakLine } = require('node-thermal-printer');
+
 const { EMPRESA, MEDIDAS } = require('../config');
+const { numberInFullConverterES } = require('./numero_es/writer/writeNumberInFullES');
 
 class Printer {
 
@@ -36,6 +38,33 @@ class Printer {
 
     async Imprimir(data) {
 
+        // const total = this.numberToName(data.total)
+        let moneda;
+        let dineroVenta;
+        let centimos = '00';
+
+        if (data.tipo_moneda == 'SOLES') moneda = 'SOLES';
+        if (data.tipo_moneda == 'DOLARES') moneda = 'DÓLARES AMERICANOS';
+
+        if (Number.isInteger(data.total)) {
+            dineroVenta = this.numberToName(data.total);
+            if (dineroVenta === 'uno') {
+                dineroVenta = 'UNO';
+                if (moneda == 'SOLES') moneda = 'SOL';
+                if (moneda == 'DÓLARES AMERICANOS') moneda = 'DOLAR';
+            };
+        } else {
+            let total = data.total?.toString()?.split('.') || [];
+            dineroVenta = this.numberToName(total[0]);
+            if (dineroVenta == 'uno') {
+                dineroVenta = 'UNO';
+                if (moneda == 'SOLES') moneda = 'SOL';
+                if (moneda == 'DÓLARES AMERICANOS') moneda = 'DOLAR';
+            };
+            centimos = total[1]?.toString()?.padEnd(2, '0');
+        }
+
+
         let isConnected = await this.printer.isPrinterConnected();
         if (!isConnected) {
             console.log("Error al conectarse a la impresora ", this.impresora);
@@ -60,6 +89,8 @@ class Printer {
         this.printer.println(`DNI                     ${data.identificacion}`);
         this.printer.println(`VENDEDOR                ${data.nombre_usuario}`);
         this.printer.println("===============================================");
+        this.printer.leftRight(`DESCRIPCION      UNM`, `TOTAL  `)
+        this.printer.println("===============================================");
         data?.productos?.map((producto) => {
 
             let medida = '';
@@ -74,23 +105,49 @@ class Printer {
 
         })
 
+        this.printer.leftRight('', `Total: S/${data.total}   `);
         this.printer.alignLeft();
         this.printer.println("===============================================");
-        this.printer.println(`SON : DOS CON TANTO TANTO`);
+        this.printer.println(`SON : ${dineroVenta.toUpperCase()} CON ${centimos}/100 ${data.tipo_moneda}`);
         this.printer.println("===============================================");
         this.printer.alignCenter();
 
-        this.printer.printQR("http://192.168.1.11/puntoventa", {
-            cellSize: 8,             // 1 - 8
-            correction: 'H',         // L(7%), M(15%), Q(25%), H(30%)
-            model: 1                 // 1 - Model 1
-            // 2 - Model 2 (standard)
-            // 3 - Micro QR
-        })
+
+        let tipoDocumento;
+
+        switch (data.tipo_documento) {
+            case 'TICKET ELECTRONICO':
+                tipoDocumento = 'TICKET ELECTRONICO';
+                break;
+
+            case 'BOLETA ELECTRONICA':
+                tipoDocumento = '03';
+                break;
+
+            case 'FACTURA ELECTRONICA':
+                tipoDocumento = '01';
+                break;
+
+            default:
+                break;
+        }
+
+
+        if (tipoDocumento != 'TICKET ELECTRONICO') {
+
+            this.printer.printQR(`${EMPRESA.RUC}|${tipoDocumento}|${data.igv.toString().split('.')[0]}.${data.igv.toString().split('.')[1].substring(0, 2)}|${data.subtotal.toString().split('.')[0]}${data.subtotal.toString().split('.')[1].substring(0, 2)}|${`${hoy.toISOString()}`.substring(0, 10)}|${data?.tipo_identificacion}|${data.identificacion}`, {
+                cellSize: 8,             // 1 - 8
+                correction: 'H',         // L(7%), M(15%), Q(25%), H(30%)
+                model: 1                 // 1 - Model 1
+                // 2 - Model 2 (standard)
+                // 3 - Micro QR
+            })
+
+        }
 
         this.printer.println(`Autorizado con resolucion N°${EMPRESA.AUTORIZACION} `);
         this.printer.println(`Representante impresa del documento electronico `);
-        this.printer.println(`http://rcingenieros.sac.com`);
+        this.printer.println(`${EMPRESA.REPRESENTANTE}`);
         this.printer.println(`Gracias por su compra`);
 
 
@@ -105,6 +162,11 @@ class Printer {
 
             return this.informacion = { error: false, message: data };
         })
+    }
+
+    numberToName(num) {
+        const numero = numberInFullConverterES(num || 0);
+        return numero;
     }
 
 }

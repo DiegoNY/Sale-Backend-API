@@ -12,11 +12,12 @@ const EMPRESA = {
     LOGO_URL: '',
     RUC: '20566487986',
     NOMBRE: 'NOMBRE LARGO DE EMPRESA',
-    EMAIL: 'empresa@empresa.com.pe'
+    EMAIL: 'empresa@empresa.com.pe',
+    REPRESENTANTE: 'http://rcingenieros.sac.com'
 }
 
 const MEDIDAS = {
-    UNIDAD: { nombre: 'UNIDAD', identificador: 'U' },
+    UNIDAD: { nombre: 'UND', identificador: 'U' },
     TABLETA: { nombre: 'TABLETA', identificador: 'T' },
     CAJA: { nombre: 'CAJA', identificador: 'C' },
 }
