@@ -16,7 +16,7 @@ const notaSalida = require('../components/nota_salida/network');
 const gastos = require('../components/gastos/network');
 const productosVendidos = require('../components/productos_vendidos/network');
 const notaCredito = require('../components/nota_credito/network');
-
+const sunat = require('../components/sunat/network');
 /**Impresion 🖨 */
 const ticket = require('../components/venta/impresion_ticket/network');
 /**End impresion */
@@ -46,7 +46,7 @@ const routes = function (server) {
     server.use('/api/v2/productos_vendidos', productosVendidos);
     server.use('/api/v2/nota_credito', notaCredito);
     server.use('/api/v2/impresion', ticket);
-
+    server.use('/api/v2/procesos', sunat);
     server.use('/ip', (req, res) => {
 
         var ip = req.ip;

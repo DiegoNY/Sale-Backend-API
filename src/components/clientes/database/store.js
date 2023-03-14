@@ -78,9 +78,7 @@ async function deletedCliente(id) {
         _id: id,
     })
 
-    foundCliente.estado = 0;
-
-    const deletedCliente = await foundCliente.save();
+    const deletedCliente = await foundCliente.delete();
     return 'Deleted';
 }
 
