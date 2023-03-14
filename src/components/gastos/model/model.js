@@ -12,6 +12,7 @@ const myScheme = new Schema({
     id_usuario: String,
     estado: Number,
     imagen: String,
+    ext: String,
 });
 
 const Model = mongoose.model('gastos', myScheme);

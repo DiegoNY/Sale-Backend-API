@@ -4,8 +4,8 @@ function addGasto(gastoData, file) {
 
     return new Promise((resolve, reject) => {
         try {
-
             let fileUrl = '';
+            const ext = file.originalname.split('.')[1];
             if (file) {
                 //cambiar url por la carpeta en la que se sirven los estaticos 
                 fileUrl = 'http://192.168.1.110:8080/imagen/' + file.filename;
@@ -19,8 +19,8 @@ function addGasto(gastoData, file) {
                 usuario: gastoData.usuario,
                 id_usuario: gastoData.id_usuario,
                 estado: 1,
-                imagen: fileUrl
-
+                imagen: fileUrl,
+                ext
             }
 
             store.add(gasto)

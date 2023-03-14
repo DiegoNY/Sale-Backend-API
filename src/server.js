@@ -31,7 +31,22 @@ router(app)
 //Archivos estaticos 
 
 app.use(express.static(path.join(__dirname, '/public/files/')))
-app.use('/imagen', express.static(__dirname + '/public/files/'))
+app.use( express.static(__dirname + '/public/files/'))
+app.use('/imagen/:file', (req, res) => {
+    const { file } = req.params;
+    const { ext } = req.query;
+    const filePath = `${__dirname}/public/files/${file}`;
+    const downloadName = `gasto.${ext}`;
+    res.download(filePath, downloadName, (err) => { // enviar el archivo al usuario como descarga con el nuevo nombre
+        if (err) {
+            console.error(err);
+            res.status(404).send('Archivo no encontrado');
+        }
+    });
+
+})
+
+
 
 //para obtner una imagen es : http://localhost:8080/imagen/nombre del archivo;
 

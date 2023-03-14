@@ -1,10 +1,5 @@
 const store = require('../database/store.js');
-const hoy = new Date();
-let fecha = hoy.toLocaleDateString("es-ES", {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-})
+
 
 function addProducto(productoData, file) {
 
@@ -13,6 +8,7 @@ function addProducto(productoData, file) {
             console.error('[messageController] No contiene codigo barras ')
             return reject('El codigo barras es requerido')
         }
+        const hoy = new Date();
 
         // console.log(file)
         // console.log("Si tiene file")
@@ -25,7 +21,6 @@ function addProducto(productoData, file) {
         const producto = {
             codigo_barras: productoData.codigo_barras,
             descripcion: productoData.descripcion,
-            fecha_registro: productoData.fecha_registro,
             descuento: productoData.descuento || 0,
             estado: productoData.estado,
             estatus: 1,
@@ -40,7 +35,7 @@ function addProducto(productoData, file) {
             stock: productoData.stock,
             stock_minimo: productoData.stock_minimo,
             tipo: productoData.tipo,
-            fecha_registro: fecha,
+            fecha_registro: `${hoy.toISOString()}`.substring(0, 10),
             venta_sujeta: productoData.venta_sujeta,
             stock_caja: productoData.stock_caja,
             stock_tableta: productoData.stock_tableta,

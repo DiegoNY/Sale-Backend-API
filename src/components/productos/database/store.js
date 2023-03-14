@@ -50,7 +50,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
     }
 
     if (!recientes && !ventas && !stockReporte && !kardex && !reporteGanancias) {
-        productos = await Model.find(filter);
+        productos = await Model.find(filter).sort({ _id: -1 });
     }
 
     if (ventas) {

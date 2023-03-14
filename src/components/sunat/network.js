@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 
     }).catch(error => {
         console.error(error);
-        res.send({ Response:  error.response.data  })
+        res.send({ Response: error.response.data })
     });
 
 
