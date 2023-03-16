@@ -291,9 +291,9 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         {
                             $lookup: {
                                 from: 'ventas',
-                                localField: 'id_producto',
-                                let: { lote: "$lote", stock: { $sum: ["$stock_inicial", "$stock_inicial_producto"] } },
-                                foreignField: 'productos._id',
+                                localField: 'lote',
+                                let: { lote: "$id_producto", stock: { $sum: ["$stock_inicial", "$stock_inicial_producto"] } },
+                                foreignField: 'productos.lote',
                                 pipeline: [
                                     {
                                         $unwind: "$productos"
@@ -304,7 +304,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                                 {
                                                     $expr: {
                                                         $in: [
-                                                            "$productos.lote", ["$$lote"]
+                                                            "$productos._id", ["$$lote"]
                                                         ]
                                                     },
                                                 }
@@ -342,6 +342,9 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                             stock: { $subtract: [{ $toInt: "$stock" }, "$salida"] }
                                         }
                                     },
+                                    {
+                                        $sort: { _id: 1 }
+                                    }
 
                                 ],
                                 as: 'ventass'
@@ -350,25 +353,21 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         {
                             $lookup: {
                                 from: 'nota_salidas',
-                                localField: 'id_producto',
-                                let: { lote: "$lote" },
-                                foreignField: 'productos._id',
+                                localField: 'lote',
+                                let: { lote: "$id_producto" },
+                                foreignField: 'productos.lote',
                                 pipeline: [
                                     {
                                         $unwind: "$productos"
                                     },
-                                    {
-                                        $sort: {
-                                            _id: -1
-                                        }
-                                    },
+
                                     {
                                         $match: {
                                             $and: [
                                                 {
                                                     $expr: {
                                                         $in: [
-                                                            "$productos.lote", ["$$lote"]
+                                                            "$productos._id", ["$$lote"]
                                                         ]
                                                     }
                                                 }
@@ -397,6 +396,11 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                         }
                                     },
                                     {
+                                        $sort: {
+                                            _id: 1
+                                        }
+                                    },
+                                    {
                                         $project: {
                                             _id: 1,
                                             fecha: 1,
@@ -406,6 +410,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                             stock: { $subtract: [{ $toInt: "$stock" }, "$salida"] }
                                         }
                                     },
+
 
 
                                 ],
@@ -420,6 +425,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         {
                             $group: {
                                 _id: "$_id",
+                                lote: { $first: "$lote" },
                                 descripcion: { $first: "$descripcion" },
                                 entrada: { $sum: "$stock_inicial" },
                                 stock: { $first: { $sum: ["$stock_inicial", "$stock_inicial_producto"] } },
@@ -428,12 +434,10 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                 salidas: { $first: "$salidas" },
                             }
                         },
-
                     ],
                     as: 'compras'
                 }
             },
-
 
         ])
     }
