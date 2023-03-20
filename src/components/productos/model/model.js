@@ -33,7 +33,7 @@ const myScheme = new Schema({
     ip_maquina: String,
     fecha_consultas: Date,
 
-});
+}, { timestamps: true });
 
 const Model = mongoose.model('productos', myScheme);
 

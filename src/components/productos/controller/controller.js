@@ -40,7 +40,6 @@ function addProducto(productoData, file) {
             stock_caja: productoData.stock_caja,
             stock_tableta: productoData.stock_tableta,
             fecha_consultas: new Date()
-
         }
 
         const response = store.add(producto);
