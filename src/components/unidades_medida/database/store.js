@@ -16,10 +16,25 @@ class UnidadMedida {
 
     async find() {
         try {
-            const rta = await UnidadMedidaModel.find({ isActive: true })
+            const rta = await UnidadMedidaModel.aggregate([
+                {
+                    $match: {
+                        isActive: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'productos',
+                        localField: 'id_producto',
+                        foreignField: '_id',
+                        as: 'producto'
+                    }
+                }
+            ])
+
             return rta;
         } catch (error) {
-            throw Error("Error en al buscar unidad de medida", error)
+            throw Error("Error  al buscar unidad de medida", error)
         }
     }
 
@@ -53,6 +68,47 @@ class UnidadMedida {
     async GetUnidadesProducto(id) {
         const unidades = await UnidadMedidaModel.find({ id_producto: id })
         return unidades;
+    }
+
+    async GetUnidadesCompra() {
+        try {
+            const rta = await UnidadMedidaModel.aggregate([
+                {
+                    $match: {
+                        isActive: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'productos',
+                        localField: 'id_producto',
+                        foreignField: '_id',
+                        as: 'producto'
+                    }
+                },
+                {
+                    $addFields: {
+                        codigo_barras: { $arrayElemAt: ["$producto.codigo_barras", 0] },
+                        tipo: { $arrayElemAt: ["$producto.tipo", 0] },
+                        venta_sujeta: { $arrayElemAt: ["$producto.venta_sujeta", 0] },
+                        descripcion: { $arrayElemAt: ["$producto.descripcion", 0] },
+                        _id: { $arrayElemAt: ["$producto._id", 0] },
+                        id_laboratorio: { $arrayElemAt: ["$producto.id_laboratorio", 0] },
+                        foto_producto: { $arrayElemAt: ["$producto.foto_producto", 0] },
+                        id_medida: "$_id"
+                    }
+                },
+                {   
+                    $project:{
+                        producto:0
+                    }
+                }
+            ])
+
+            return rta;
+        } catch (error) {
+            throw Error('Error al mostrar unidades para la compra', error)
+        }
     }
 }
 

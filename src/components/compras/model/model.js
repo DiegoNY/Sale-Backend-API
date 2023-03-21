@@ -22,6 +22,7 @@ const mySchemeProductos = new Schema({
     total: Number,
     fecha_consultas: Date,
     medida: String,
+    nombre: String
 
 })
 

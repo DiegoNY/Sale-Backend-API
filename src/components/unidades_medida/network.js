@@ -17,6 +17,15 @@ router.get('/', async (req, res) => {
     res.status(200).send(rta);
 })
 
+router.get('/compra', async (req, res) => {
+    try {
+        const rta = await Servicio.GetUnidadesCompra();
+        res.status(200).send(rta);
+    } catch (error) {
+        res.status(500).send({ error: true, message: error })
+    }
+})
+
 router.get('/:_id', async (req, res) => {
     try {
         const { _id } = req.params;
@@ -35,7 +44,6 @@ router.get('/producto/:_id', async (req, res) => {
     } catch (error) {
         res.status(200).send({ error: true, message: error })
     }
-
 })
 
 router.delete('/:_id', async (req, res) => {

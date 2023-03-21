@@ -49,10 +49,10 @@ function addProducto(productoData, file) {
 
 }
 
-function getProducto(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias) {
+function getProducto(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias,compra) {
 
     return new Promise((resolve, rejec) => {
-        resolve(store.list(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias));
+        resolve(store.list(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias,compra));
     })
 }
 

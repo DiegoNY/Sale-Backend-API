@@ -19,7 +19,11 @@ const myScheme = new Schema({
     fecha_vencimiento: String,
     fecha_vencimiento_consultas: Date,
     stock_inicial: Number,
-    stock_inicial_producto: Number
+    stock_inicial_producto: Number,
+    id_medida:{
+        type: Schema.Types.ObjectId,
+        ref: 'unidades_medidas'
+    }
 
 });
 

@@ -39,7 +39,7 @@ function addProducto(producto) {
 
 }
 
-async function getProducto(filterProducto, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias) {
+async function getProducto(filterProducto, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias, compra) {
 
 
     let filter = { estatus: '1' }
@@ -72,6 +72,14 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                     }
                 },
                 {
+                    $lookup: {
+                        from: 'unidades_medidas',
+                        localField: 'id_medida',
+                        foreignField: '_id',
+                        as: 'medida'
+                    }
+                },
+                {
                     $addFields: {
                         codigo_barras: { $arrayElemAt: ["$informacionProducto.codigo_barras", 0] },
                         precio_venta: { $arrayElemAt: ["$informacionProducto.precio_venta", 0] },
@@ -88,7 +96,8 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         estado: { $arrayElemAt: ["$informacionProducto.estado", 0] },
                         id_producto: { $arrayElemAt: ["$informacionProducto._id", 0] },
                         id_laboratorio: { $arrayElemAt: ["$informacionProducto.id_laboratorio", 0] },
-                        id_lote: "$_id"
+                        id_lote: "$_id",
+                        medida: { $arrayElemAt: ["$medida", 0] }
                     }
                 },
                 {
@@ -112,8 +121,9 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         estatus: 1,
                         estado: 1,
                         id_laboratorio: 1,
+                        medida: 1
                     }
-                }
+                },
             ]
         )
     }
@@ -580,6 +590,23 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
         return reporte_ganancias;
     }
 
+    if (compra) {
+        productos = await Model.aggregate([
+            {
+                $match: {
+                    estatus: '1'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'unidades_medidas',
+                    localField: '_id',
+                    foreignField: 'id_producto',
+                    as: 'medidas'
+                }
+            }
+        ])
+    }
     return productos;
 
 }

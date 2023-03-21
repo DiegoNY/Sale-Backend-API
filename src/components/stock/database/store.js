@@ -3,8 +3,10 @@ const Model = require('../model/model.js')
 async function addStock(stock) {
     const foundLote = await Model.findOne({
         lote: stock.lote,
-        id_producto: stock.id_producto
+        id_medida: stock.id_medida
     })
+
+    console.log(stock);
 
     if (!foundLote) {
         const myStock = new Model(stock);

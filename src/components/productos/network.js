@@ -16,8 +16,9 @@ router.get('/', (req, res) => {
     const kardex = req.query.kardex || false;
     const stock_minimo = req.query.stock_minimo || false;
     const reporteGanancias = req.query.reporte_ganancias || false;
+    const compra = req.query.compra || false;
 
-    controller.get(filterProducto, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias)
+    controller.get(filterProducto, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias, compra)
         .then((productos) => {
             response.successDataApiV1(req, res, productos, 200)
         })
@@ -28,13 +29,9 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', upload.single('imagen'), (req, res) => {
-
-
     controller.add(req.body, req.file)
         .then((productos) => {
-
             response.successDataApiV1(req, res, [{ error: "", body: productos }], 201)
-
         })
         .catch(e => {
             response.error(req, res, 'Informacion requerida', 400, e)

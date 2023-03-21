@@ -17,6 +17,7 @@ function sumarStockProductosComprados(productos = []) {
                 precio_venta_tableta: objeto.precio_venta_tableta,
                 precio_venta: objeto.precio_venta,
                 lote: objeto.lote,
+                id_medida: objeto.id_medida
             };
         } else {
             acumulador[objeto._id].stock_comprado += Number(objeto.stock_comprado);
@@ -59,6 +60,7 @@ function ingresarStockLotes(productosData = []) {
                 fecha_vencimiento: productos[key].fecha_vencimiento,
                 lote: productos[key].lote,
                 id_producto: productos[key]._id,
+                id_medida: productos[key].id_medida
             }
         )
     }

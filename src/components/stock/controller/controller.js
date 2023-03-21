@@ -18,7 +18,7 @@ function addStock(stockData) {
                 id_producto: stockData.id_producto,
                 fecha_consultas: new Date(),
                 fecha_vencimiento_consultas: new Date(stockData.fecha_vencimiento),
-
+                id_medida: stockData.id_medida,
             }
 
             store.add(lote);
