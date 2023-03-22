@@ -1,6 +1,7 @@
 const express = require('express');
 const controller = require('./controller/controller.js')
-const response = require('../../network/response.js')
+const response = require('../../network/response.js');
+const { getUltimaAperturaUsuario } = require('./database/store.js');
 const router = express.Router();
 
 
@@ -34,6 +35,16 @@ router.post('/', (req, res) => {
 
 })
 
+router.get('/ultima_apertura/usuario/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const rta = await getUltimaAperturaUsuario(id);
+        res.send(rta);
+    } catch (error) {
+        res.status(400).send({ error: true, message: error });
+    }
+
+})
 router.put('/:id', (req, res) => {
 
     controller.update(req.params.id, req.body)

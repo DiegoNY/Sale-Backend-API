@@ -17,6 +17,9 @@ const UnidadMedidaSchema = new Schema({
     stock: Number,
     precio_venta: Number,
     precio_compra: Number,
+    stock_actual: Number,
+    stock_minimo: Number
+    
 }, { timestamps: true })
 
 const UnidadMedidaModel = mongoose.model('unidades_medida', UnidadMedidaSchema)

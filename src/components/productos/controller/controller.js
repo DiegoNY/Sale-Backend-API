@@ -49,10 +49,10 @@ function addProducto(productoData, file) {
 
 }
 
-function getProducto(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias,compra) {
+function getProducto(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias, compra) {
 
     return new Promise((resolve, rejec) => {
-        resolve(store.list(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias,compra));
+        resolve(store.list(filterCodigoBarra, recientes, ventas, stockBajo, stockReporte, kardex, stock_minimo, reporteGanancias, compra));
     })
 }
 
@@ -62,7 +62,7 @@ function updateProducto(id, body) {
         if (!id || !body) {
             return reject('Los datos son invalidos')
         }
-        const result = store.update(id, body);
+        const result = store.update(id, body, false, true);
         resolve(result);
     })
 }

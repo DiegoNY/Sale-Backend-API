@@ -17,10 +17,12 @@ function sumarStockProductosComprados(productos = []) {
                 precio_venta_tableta: objeto.precio_venta_tableta,
                 precio_venta: objeto.precio_venta,
                 lote: objeto.lote,
-                id_medida: objeto.id_medida
+                id_medida: objeto.id_medida,
+                cantidad_compra: objeto.cantidad_compra
             };
         } else {
             acumulador[objeto._id].stock_comprado += Number(objeto.stock_comprado);
+            acumulador[objeto._id].cantidad_compra += Number(objeto.cantidad_compra);
         }
 
         return acumulador;

@@ -1,5 +1,5 @@
 const Model = require('../model/model.js')
-
+const mongoose = require('mongoose')
 
 function addApertura(apertura) {
     const myApertura = new Model(apertura);
@@ -93,6 +93,11 @@ async function getApertura(filterApertura, aperturo, reporte) {
 
 }
 
+async function getUltimaAperturaUsuario(id) {
+    const rta = await Model.find({ usuario: mongoose.Types.ObjectId(id), tipo: "APERTURA" }).sort({ _id: -1 }).limit(1)
+    return rta[0];
+}
+
 async function updateApertura(id, body) {
     const foundApertura = await Model.findOne({
         _id: id
@@ -126,4 +131,5 @@ module.exports = {
     list: getApertura,
     update: updateApertura,
     deleted: deletedApertura,
+    getUltimaAperturaUsuario
 }

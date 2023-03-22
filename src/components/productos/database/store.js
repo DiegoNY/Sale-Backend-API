@@ -260,8 +260,12 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                         stock_minimo: { $first: "$stock_minimo" },
 
                     }
+                },
+                {
+                    $sort: {
+                        _id: -1
+                    }
                 }
-
             ]
         )
     }
@@ -611,7 +615,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
 
 }
 
-async function updateProducto(id, body, actualizar_stock_venta = false) {
+async function updateProducto(id, body, actualizar_stock_venta = false, actualizarProducto = false) {
 
     const foundProducto = await Model.findOne({
         _id: id
@@ -626,7 +630,7 @@ async function updateProducto(id, body, actualizar_stock_venta = false) {
     foundProducto.precio_compra_caja = body.precio_compra_caja || foundProducto.precio_compra_caja;
     foundProducto.precio_compra_tableta = body.precio_compra_tableta || foundProducto.precio_compra_tableta;
 
-    if (!actualizar_stock_venta) foundProducto.stock = body.stock + foundProducto.stock;
+    if (!actualizar_stock_venta && actualizarProducto === false) foundProducto.stock = body.stock + foundProducto.stock;
     if (!!actualizar_stock_venta) foundProducto.stock = Number(foundProducto.stock) - Number(body.stock);
     foundProducto.stock_minimo = body.stock_minimo || foundProducto.stock_minimo;
     foundProducto.tipo = body.tipo || foundProducto.tipo;
