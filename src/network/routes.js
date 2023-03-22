@@ -17,7 +17,7 @@ const gastos = require('../components/gastos/network');
 const productosVendidos = require('../components/productos_vendidos/network');
 const notaCredito = require('../components/nota_credito/network');
 const sunat = require('../components/sunat/network');
-const unidad_medida = require('../components/unidades_medida/network')
+const unidad_medida = require('../components/unidades_medida/network');
 
 /**Impresion 🖨 */
 const ticket = require('../components/venta/impresion_ticket/network');

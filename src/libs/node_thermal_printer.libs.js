@@ -89,7 +89,7 @@ class Printer {
         this.printer.println(`DNI                     ${data.identificacion}`);
         this.printer.println(`VENDEDOR                ${data.nombre_usuario}`);
         this.printer.println("===============================================");
-        this.printer.leftRight(`DESCRIPCION      UNM`, `TOTAL  `)
+        this.printer.leftRight(`DESCRIPCION      `, `TOTAL  `)
         this.printer.println("===============================================");
         data?.productos?.map((producto) => {
 
@@ -100,7 +100,7 @@ class Printer {
                     medida = MEDIDAS[key].nombre
                 }
             }
-            this.printer.leftRight(`${producto.descripcion} ${producto.cantidad_comprada} ${medida}`, `${producto.precio}   `)
+            this.printer.leftRight(`${producto.descripcion} ${producto.cantidad_comprada} ${producto.nombre}`, `${producto.precio}   `)
             this.printer.leftRight(`Total :`, `${producto.total}   `)
 
         })

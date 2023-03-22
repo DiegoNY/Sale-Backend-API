@@ -19,6 +19,7 @@ const mySchemeProductos = new Schema({
         require: true,
     },
     cantidad_comprada: Number,
+    nombre: String,
     medida: String
 })
 
