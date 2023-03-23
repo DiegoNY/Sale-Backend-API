@@ -29,11 +29,17 @@ class UnidadMedida {
                         foreignField: '_id',
                         as: 'producto'
                     }
+                },
+                {
+                    $addFields: {
+                        stock_actual: { $round: [{ $divide: [{ $arrayElemAt: ["$producto.stock", 0] }, "$stock"] }, 1] }
+                    }
                 }
             ])
 
             return rta;
         } catch (error) {
+            console.log(error);
             throw Error("Error  al buscar unidad de medida", error)
         }
     }
@@ -52,9 +58,12 @@ class UnidadMedida {
         return rta[0];
     }
 
-    async Update(data) {
-        const newUnidadMedida = await UnidadMedidaModel.findOne({ _id: data._id })
-        const newUnidad = { ...newUnidadMedida, ...data }
+    async Update(_id, data) {
+        const newUnidadMedida = await UnidadMedidaModel.findOne({ _id: _id })
+        for (const key in data) {
+            newUnidadMedida[key] = data[key];
+        }
+        const newUnidad = await newUnidadMedida.save();
         return newUnidad;
     }
 
@@ -95,12 +104,12 @@ class UnidadMedida {
                         _id: { $arrayElemAt: ["$producto._id", 0] },
                         id_laboratorio: { $arrayElemAt: ["$producto.id_laboratorio", 0] },
                         foto_producto: { $arrayElemAt: ["$producto.foto_producto", 0] },
-                        id_medida: "$_id"
+                        id_medida: "$_id",
                     }
                 },
-                {   
-                    $project:{
-                        producto:0
+                {
+                    $project: {
+                        producto: 0
                     }
                 }
             ])

@@ -46,6 +46,18 @@ router.get('/producto/:_id', async (req, res) => {
     }
 })
 
+router.put('/:_id', async (req, res) => {
+    try {
+        const { _id } = req.params;
+        const body = req.body;
+
+        const rta = await Servicio.Update(_id, body);
+        res.status(200).send({ error: false, data: rta });
+    } catch (error) {
+        res.status(200).send({ error: true, message: error });
+    }
+})
+
 router.delete('/:_id', async (req, res) => {
     const { _id } = req.params;
     const deletes = await Servicio.Delete(_id);

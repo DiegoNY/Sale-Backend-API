@@ -36,7 +36,7 @@ class Printer {
 
     }
 
-    async Imprimir(data) {
+    async Imprimir(data) { 
 
         // const total = this.numberToName(data.total)
         let moneda;
