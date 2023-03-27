@@ -61,7 +61,8 @@ const mySchemeVenta = new Schema({
     fecha_consultas: Date,
     cuotas: Number,
     leyenda: String,
-    informacion_cuotas: [mySchemeCuotas]
+    informacion_cuotas: [mySchemeCuotas],
+    impresora: String
 });
 
 

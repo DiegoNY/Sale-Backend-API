@@ -32,6 +32,7 @@ async function updateTipoDocumentos(id, body) {
     foundTipoDocumentos.ip_mask = body.ip_mask;
     foundTipoDocumentos.estado = body.estado;
     foundTipoDocumentos.nombre = body.nombre;
+    foundTipoDocumentos.impresora = body.impresora;
     foundTipoDocumentos.serie = body.serie;
     foundTipoDocumentos.tipo = body.tipo;
     foundTipoDocumentos.fecha_actualizacion = hoy;

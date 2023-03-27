@@ -28,6 +28,31 @@ router.get('/', (req, res) => {
 
 })
 
+router.get('/reporte/stock', async (req, res) => {
+
+    controller.reporteStock()
+        .then(rta => {
+            res.status(200).send({ error: false, data: rta });
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({ error: true, data: [], message: error })
+        })
+
+})
+router.get('/reporte/stock_valorizado', async (req, res) => {
+    controller.reporteStockValorizado()
+        .then(rta => {
+            res.status(200).send({ error: false, data: rta });
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send({ error: true, data: [], message: error })
+        })
+
+
+})
+
 router.post('/', upload.single('imagen'), (req, res) => {
     controller.add(req.body, req.file)
         .then((productos) => {
@@ -51,6 +76,7 @@ router.put('/:id', (req, res) => {
         })
 
 })
+
 
 
 

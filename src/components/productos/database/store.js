@@ -325,7 +325,7 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                             ],
                                             fecha_consultas: {
                                                 $gte: new Date(data.desde),
-                                                $lte: new Date(data.hasta)
+                                                $lte: new Date(data.hasta + 'T23:59:00.000Z')
                                             }
                                         }
                                     },
@@ -615,6 +615,74 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
 
 }
 
+async function queryStock() {
+    const rta = await Model.aggregate([
+        {
+            $match: {
+                estado: 1
+            }
+        },
+        {
+            $lookup: {
+                localField: "_id",
+                from: "stocks",
+                foreignField: 'id_producto',
+                // pipeline:[
+                //     {
+
+                //     }
+                // ],
+                as: 'lotes'
+            }
+        },
+        {
+            $unwind: "$lotes"
+        },
+        {
+            $group: {
+                _id: "$lotes._id",
+                lote: { $push: "$lotes" },
+                descripcion: { $last: "$descripcion" },
+                laboratorio: { $last: "$id_laboratorio" },
+            }
+        },
+        {
+
+            $lookup: {
+                localField: "lotes.id_producto",
+                from: "unidades_medidas",
+                foreignField: 'id_producto',
+                // pipeline:[
+                //     {
+
+                //     }
+                // ],
+                as: 'medida'
+            }
+        },
+        {
+            $project: {
+                descripcion: 1,
+                lote: { $arrayElemAt: ["$lote.lote", 0] },
+                fecha_vencimiento: { $arrayElemAt: ["$lote.fecha_vencimiento", 0] },
+                laboratorio: 1,
+                medida: { $arrayElemAt: ["$medida.nombre", 0] }
+            }
+        }
+    ])
+
+    return rta
+}
+async function queryStockValorizado(_id) {
+    const rta = await Model.aggregate([
+        {
+            $match: {
+                estado: 1
+            }
+        }
+    ])
+}
+
 async function updateProducto(id, body, actualizar_stock_venta = false, actualizarProducto = false) {
 
     const foundProducto = await Model.findOne({
@@ -667,4 +735,6 @@ module.exports = {
     list: getProducto,
     update: updateProducto,
     deleted: deletedProducto,
+    queryStock,
+    queryStockValorizado,
 }

@@ -78,10 +78,26 @@ function deleteProducto(id) {
     });
 }
 
+function reporteStock() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const rta = store.queryStock();
+            resolve(rta);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+
+function reporteStockValorizado() {
+
+}
 
 module.exports = {
     add: addProducto,
     get: getProducto,
     update: updateProducto,
     delete: deleteProducto,
+    reporteStock,
+    reporteStockValorizado,
 };

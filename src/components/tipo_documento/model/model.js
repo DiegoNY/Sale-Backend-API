@@ -18,6 +18,7 @@ const myScheme = new Schema({
     usuario: String,
     ip_maquina: String,
     fecha_consultas: Date,
+    impresora: String,
 
 });
 

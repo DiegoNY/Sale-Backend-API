@@ -32,6 +32,7 @@ function addListaVenta(listaVentaData) {
                 cuotas: listaVentaData.cuotas,
                 informacion_cuotas: listaVentaData.informacion_cuotas,
                 nombre_usuario: listaVentaData.nombre_usuario,
+                impresora: listaVentaData.impresora,
             }
 
             store.add(listaventa)

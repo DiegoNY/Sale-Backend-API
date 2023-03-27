@@ -22,8 +22,8 @@ function addTipoDocumento(tipoDocumentoData) {
                 estatus: 1,
                 serie: tipoDocumentoData.serie,
                 tipo: tipoDocumentoData.tipo,
-                fecha_consultas: new Date()
-
+                fecha_consultas: new Date(),
+                impresora : tipoDocumentoData.impresora,
             }
 
             store.add(proveedor);
