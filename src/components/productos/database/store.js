@@ -424,16 +424,13 @@ async function getProducto(filterProducto, recientes, ventas, stockBajo, stockRe
                                             stock: { $subtract: [{ $toInt: "$stock" }, "$salida"] }
                                         }
                                     },
-
-
-
                                 ],
                                 as: 'salidas'
                             }
                         },
                         {
                             $addFields: {
-                                descripcion: { $concat: ["Compra :", "$lote"] }
+                                descripcion: { $concat: ["Compra :", "$lote"] },
                             }
                         },
                         {
@@ -625,53 +622,112 @@ async function queryStock() {
         {
             $lookup: {
                 localField: "_id",
-                from: "stocks",
+                from: 'unidades_medidas',
                 foreignField: 'id_producto',
-                // pipeline:[
-                //     {
-
-                //     }
-                // ],
-                as: 'lotes'
+                as: 'medidas'
             }
         },
         {
-            $unwind: "$lotes"
+            $unwind: '$medidas'
         },
         {
-            $group: {
-                _id: "$lotes._id",
-                lote: { $push: "$lotes" },
-                descripcion: { $last: "$descripcion" },
-                laboratorio: { $last: "$id_laboratorio" },
-            }
-        },
-        {
-
             $lookup: {
-                localField: "lotes.id_producto",
-                from: "unidades_medidas",
-                foreignField: 'id_producto',
-                // pipeline:[
-                //     {
-
-                //     }
-                // ],
-                as: 'medida'
+                localField: 'medidas._id',
+                from: 'ventas',
+                let: { medida: "$medidas._id" },
+                foreignField: 'productos.medida',
+                pipeline: [
+                    {
+                        $unwind: '$productos'
+                    },
+                    {
+                        $match: {
+                            $and: [
+                                {
+                                    $expr: {
+                                        $in: [
+                                            "$productos.medida", ["$$medida"] //Mostrando solo los productos con el mismo codigo
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$productos.medida",
+                            cantidad: { $sum: "$productos.stock_vendido" },
+                            fecha: { $first: "$fecha_registro" }
+                        }
+                    }
+                ],
+                as: 'ventas'
+            }
+        },
+        {
+            $lookup: {
+                localField: 'medidas._id',
+                from: 'nota_salidas',
+                let: { medida: "$medidas._id" },
+                foreignField: 'productos.medida',
+                pipeline: [
+                    {
+                        $unwind: '$productos'
+                    },
+                    {
+                        $match: {
+                            $and: [
+                                {
+                                    $expr: {
+                                        $in: [
+                                            "$productos.medida", ["$$medida"]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$productos.medida",
+                            cantidad: { $sum: "$productos.stock_saliente" },
+                            fecha: { $first: "$fecha_registro" }
+                        }
+                    }
+                ],
+                as: 'salidas'
+            }
+        },
+        {
+            $sort: {
+                ventas: -1,
             }
         },
         {
             $project: {
-                descripcion: 1,
-                lote: { $arrayElemAt: ["$lote.lote", 0] },
-                fecha_vencimiento: { $arrayElemAt: ["$lote.fecha_vencimiento", 0] },
-                laboratorio: 1,
-                medida: { $arrayElemAt: ["$medida.nombre", 0] }
+                _id: "$medidas._id",
+                descripcion: { $concat: ["$descripcion", " ", "$medidas.nombre"] },
+                codigo: "$codigo_barras",
+                estado: "$estado",
+                laboratorio: "$id_laboratorio",
+                salidas: { $ifNull: [{ $arrayElemAt: ["$salidas.cantidad", 0] }, 0] },
+                ventas: { $ifNull: [{ $arrayElemAt: ["$ventas.cantidad", 0] }, 0] },
+                stock: 1,
+                stock_inicial: {
+                    $sum: [
+                        { $arrayElemAt: ["$ventas.cantidad", 0] },
+                        { $arrayElemAt: ["$salidas.cantidad", 0] },
+                        "$stock"
+                    ]
+                },
+                stock_minimo: 1
             }
         }
+
+
     ])
 
-    return rta
+    return rta;
 }
 async function queryStockValorizado(_id) {
     const rta = await Model.aggregate([
@@ -679,8 +735,67 @@ async function queryStockValorizado(_id) {
             $match: {
                 estado: 1
             }
+        },
+        {
+            $lookup: {
+                localField: "_id",
+                from: 'unidades_medidas',
+                foreignField: 'id_producto',
+                as: 'medidas'
+            }
+        },
+        {
+            $unwind: '$medidas'
+        },
+        {
+            $lookup: {
+                localField: 'medidas._id',
+                from: 'stocks',
+                foreignField: 'id_medida',
+                as: 'lotes'
+            }
+        },
+        {
+            $unwind: "$lotes"
+        },
+        {
+            $project: {
+                _id: "$lotes._id",
+                descripcion: { $concat: ["$descripcion", " ", "$medidas.nombre"] },
+                laboratorio: "$id_laboratorio",
+                stock: 1,
+                lote: "$lotes.lote",
+                fecha_vencimiento: "$lotes.fecha_vencimiento",
+                precio_compra: "$medidas.precio_compra",
+                valor_total: { $multiply: ["$stock", "$medidas.precio_compra"] }
+            }
         }
     ])
+
+    return rta;
+}
+
+async function queryKardex(data) {
+    const { desde, hasta, id } = data;
+
+    const rta = await Model.aggregate([
+        {
+            $match: {
+                _id: mongoose.Types.ObjectId(id),
+                estado: 1,
+            }
+        },
+        {
+            $lookup: {
+                localField: '_id',
+                from: 'stocks',
+                foreignField: 'id_producto',
+                as: 'lotes'
+            }
+        }
+    ])
+
+    return rta;
 }
 
 async function updateProducto(id, body, actualizar_stock_venta = false, actualizarProducto = false) {
@@ -737,4 +852,5 @@ module.exports = {
     deleted: deletedProducto,
     queryStock,
     queryStockValorizado,
+    queryKardex
 }

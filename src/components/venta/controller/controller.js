@@ -1,3 +1,4 @@
+const { queryGanancias } = require('../database/store.js');
 const store = require('../database/store.js');
 
 
@@ -87,6 +88,18 @@ function deleteListaVenta(id) {
     });
 }
 
+function getDataGanancias(data) {
+    return new Promise((resolve, reject) => {
+
+        try {
+            const rta = queryGanancias(data);
+            resolve(rta);
+        } catch (error) {
+            reject(error);
+        }
+
+    })
+}
 
 
 module.exports = {
@@ -94,4 +107,5 @@ module.exports = {
     get: getListaVenta,
     update: updateListaVenta,
     delete: deleteListaVenta,
+    getDataGanancias
 };

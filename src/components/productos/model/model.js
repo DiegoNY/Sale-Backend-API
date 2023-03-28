@@ -14,6 +14,10 @@ const myScheme = new Schema({
     estatus: String,
     foto_producto: String,
     id_laboratorio: String,
+    lab: {
+        type: Schema.Types.ObjectId,
+        ref:'laboratorios'
+    },
     precio_compra: Number,
     precio_compra_caja: Number,
     precio_compra_tableta: Number,

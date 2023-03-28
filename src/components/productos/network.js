@@ -53,6 +53,17 @@ router.get('/reporte/stock_valorizado', async (req, res) => {
 
 })
 
+router.post('/reporte/kardex/:id', async (req, res) => {
+    const { id } = req.params;
+    const body = req.body;
+
+    controller.ReporteKardex(id, body)
+        .then(rta => {
+            res.send({ error: false, data: rta })
+        })
+        .catch(error => res.send({ error: true, message: error, data: [] }))
+})
+
 router.post('/', upload.single('imagen'), (req, res) => {
     controller.add(req.body, req.file)
         .then((productos) => {
@@ -61,12 +72,9 @@ router.post('/', upload.single('imagen'), (req, res) => {
         .catch(e => {
             response.error(req, res, 'Informacion requerida', 400, e)
         });
-
-
 })
 
 router.put('/:id', (req, res) => {
-
     controller.update(req.params.id, req.body)
         .then((data) => {
             response.success(req, res, data, 200);
@@ -74,7 +82,6 @@ router.put('/:id', (req, res) => {
         .catch(e => {
             response.error(req, res, 'Error interno', 500, e)
         })
-
 })
 
 

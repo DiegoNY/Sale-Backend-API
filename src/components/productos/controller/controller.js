@@ -90,7 +90,28 @@ function reporteStock() {
 }
 
 function reporteStockValorizado() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const rta = store.queryStockValorizado();
+            resolve(rta);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
 
+function ReporteKardex(id, data) {
+
+    const { desde, hasta } = data;
+
+    return new Promise((resolve, reject) => {
+        try {
+            const rta = store.queryKardex({ id, desde, hasta })
+            resolve(rta);
+        } catch (error) {
+            reject(error);
+        }
+    })
 }
 
 module.exports = {
@@ -100,4 +121,5 @@ module.exports = {
     delete: deleteProducto,
     reporteStock,
     reporteStockValorizado,
+    ReporteKardex
 };

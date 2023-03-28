@@ -517,6 +517,31 @@ async function deletedListaVenta(id) {
     return 'Deleted';
 }
 
+async function queryGanancias(data) {
+    const { desde, hasta } = data;
+    const rta = await Model.aggregate([
+        {
+            $match: {
+                fecha_consultas: {
+                    $gte: new Date(desde),
+                    $lte: new Date(hasta)
+                }
+            }
+        },
+        {
+            $unwind: "$productos"
+        },
+        // {
+        //     $project: {
+        //         stock_vendido: 1,
+        //         descripcion: 1,
+        //         id_laboratorio: 1,
+        //         precio_venta: "$producto.precio"
+        //     }
+        // }
+    ]);
+    return rta
+}
 
 
 module.exports = {
@@ -525,4 +550,5 @@ module.exports = {
     update: updateListaVenta,
     deleted: deletedListaVenta,
     deletedListaVenta,
+    queryGanancias
 }

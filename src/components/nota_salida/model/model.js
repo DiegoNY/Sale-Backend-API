@@ -21,6 +21,10 @@ const mySchemeProductos = new Schema({
     cantidad: String,
     tipo: String,
     venta_sujeta: String,
+    medida: {
+        type: Schema.Types.ObjectId,
+        ref: 'unidades_medidas'
+    }
 })
 
 const mySchemeNotaSalida = new Schema({

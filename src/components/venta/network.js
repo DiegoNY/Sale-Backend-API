@@ -35,6 +35,17 @@ router.get('/', (req, res) => {
 
 })
 
+router.get('/reporte/ganancias', (req, res) => {
+    const { desde, hasta } = req.query;
+    controller.getDataGanancias({ desde, hasta })
+        .then(rta => {
+            res.send({ error: false, data: rta })
+        })
+        .catch(error => {
+            res.send({ error: true, data: [], message: error })
+        })
+})
+
 router.post('/', (req, res) => {
 
     const historial = req.query.historial || false;
