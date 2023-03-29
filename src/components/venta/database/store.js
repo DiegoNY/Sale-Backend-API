@@ -531,14 +531,77 @@ async function queryGanancias(data) {
         {
             $unwind: "$productos"
         },
-        // {
-        //     $project: {
-        //         stock_vendido: 1,
-        //         descripcion: 1,
-        //         id_laboratorio: 1,
-        //         precio_venta: "$producto.precio"
-        //     }
-        // }
+        {
+            $lookup: {
+                localField: 'productos.medida',
+                from: 'unidades_medidas',
+                foreignField: '_id',
+                as: 'medida_s',
+            }
+        },
+        {
+            $sort: {
+                _id: -1
+            }
+        },
+        {
+            $unwind: "$medida_s"
+        },
+        {
+            $project: {
+                cantidad_vendida: "$productos.stock_vendido",
+                descripcion: { $concat: ["$productos.descripcion", " ", "$medida_s.nombre"] },
+                laboratorio: "$productos.id_laboratorio",
+                total: 1,
+                precio_venta: "$productos.precio",
+                utilidad: {
+                    $ifNull: [{
+                        $subtract: [
+                            "$total",
+                            {
+                                $multiply: [
+                                    "$productos.stock_vendido",
+                                    "$medida_s.precio_compra"
+                                ]
+                            }]
+                    }, 0]
+                },
+                porcentaje: {
+                    $ifNull: [
+                        {
+                            $round: [
+                                {
+                                    $multiply: [
+                                        {
+                                            $divide: [
+                                                {
+                                                    $subtract: [
+                                                        "$total",
+                                                        {
+                                                            $multiply: [
+                                                                "$productos.stock_vendido",
+                                                                "$medida_s.precio_compra",
+
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "$total"
+                                            ]
+                                        },
+                                        100
+                                    ]
+
+                                },
+                                0
+                            ]
+                        },
+                        0
+                    ]
+                }
+            }
+        },
+
     ]);
     return rta
 }
