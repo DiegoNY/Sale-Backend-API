@@ -2,6 +2,7 @@ const Model = require('../model/model.js')
 const hoy = new Date();
 const VENTAS = require('../../venta/model/model.js');
 const mongoose = require('mongoose');
+const ModelCaja = require('../../caja/model/model.js')
 
 function addUsuario(usuario) {
 
@@ -23,7 +24,7 @@ async function getUsuario(filterUsuario) {
 }
 
 async function updateUsuario(id, body) {
-    console.log(body);
+    // console.log(body);
     const foundUsuario = await Model.findOne({
         _id: id
     })
@@ -34,6 +35,7 @@ async function updateUsuario(id, body) {
     foundUsuario.dni = body.dni;
     foundUsuario.email = body.email;
     foundUsuario.estatus = body.estatus;
+    foundUsuario.tipo = body.tipo;
     foundUsuario.fecha_ingreso = body.fecha_ingreso;
     foundUsuario.nombre = body.nombre;
     foundUsuario.telefono = body.telefono;
@@ -64,10 +66,12 @@ async function velidationUsuario(body) {
         usuario: body.usuario,
         clave: body.contraseña
     })
-
-    console.log(foundUsuario);
+    const informacionApertura = await ModelCaja.find({ usuario: foundUsuario._id }).sort({ _id: -1 }).limit(1);
+    // console.log(informacionApertura);
     if (foundUsuario) {
-        return foundUsuario;
+        const usr = { ...foundUsuario._doc, info_adicional: { ...informacionApertura[0]._doc } };
+        // console.log(usr)
+        return usr;
     }
 
     if (!foundUsuario) {
@@ -121,7 +125,7 @@ async function perfil(id) {
                 ultima_venta: { $last: "$correlativo" },
                 total: { $sum: "$total" },
                 tipo_documento: { $last: "$tipo_documento" },
-                fecha: {$first: "$fecha_registro"}
+                fecha: { $first: "$fecha_registro" }
             },
         },
 
