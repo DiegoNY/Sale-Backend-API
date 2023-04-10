@@ -70,7 +70,6 @@ async function velidationUsuario(body) {
     // console.log(informacionApertura);
     if (foundUsuario) {
         const usr = { ...foundUsuario._doc, info_adicional: { ...informacionApertura[0]._doc } };
-        // console.log(usr)
         return usr;
     }
 

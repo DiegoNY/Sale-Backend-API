@@ -31,7 +31,7 @@ router(app)
 //Archivos estaticos 
 
 app.use(express.static(path.join(__dirname, '/public/files/')))
-app.use( express.static(__dirname + '/public/files/'))
+app.use(express.static(__dirname + '/public/files/'))
 app.use('/imagen/:file', (req, res) => {
     const { file } = req.params;
     const { ext } = req.query;
@@ -46,7 +46,11 @@ app.use('/imagen/:file', (req, res) => {
 
 })
 
-
+/**Mostrando pagina en produccion :D ✨ ruta del cliente y el archivo principal index */
+// app.use(express.static('C:/Users/Desarrollo05/Desktop/ventas/build'))
+// app.get('/', (req, res) => {
+//     res.sendFile(path.join('C:/Users/Desarrollo05/Desktop/ventas/build', 'index.html'));
+// })
 
 //para obtner una imagen es : http://localhost:8080/imagen/nombre del archivo;
 
